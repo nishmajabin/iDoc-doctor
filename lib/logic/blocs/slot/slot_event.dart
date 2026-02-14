@@ -1,23 +1,13 @@
-import 'package:equatable/equatable.dart';
-
-abstract class SlotEvent extends Equatable {
-  const SlotEvent();
-  
-  @override
-  List<Object?> get props => [];
-}
+abstract class SlotEvent {}
 
 class FetchSlotsByDateRangeEvent extends SlotEvent {
   final DateTime startDate;
   final DateTime endDate;
 
-  const FetchSlotsByDateRangeEvent({
+  FetchSlotsByDateRangeEvent({
     required this.startDate,
     required this.endDate,
   });
-
-  @override
-  List<Object?> get props => [startDate, endDate];
 }
 
 class CreateSlotsForDateRangeEvent extends SlotEvent {
@@ -28,33 +18,26 @@ class CreateSlotsForDateRangeEvent extends SlotEvent {
   final int intervalMinutes;
   final int breakTimeMinutes;
 
-  const CreateSlotsForDateRangeEvent({
+  CreateSlotsForDateRangeEvent({
     required this.startDate,
     required this.endDate,
     required this.startTime,
     required this.endTime,
     required this.intervalMinutes,
-    this.breakTimeMinutes = 0,
+    required this.breakTimeMinutes,
   });
-
-  @override
-  List<Object?> get props => [
-    startDate,
-    endDate,
-    startTime,
-    endTime,
-    intervalMinutes,
-    breakTimeMinutes,
-  ];
 }
 
 class DeleteSlotEvent extends SlotEvent {
   final String slotId;
 
-  const DeleteSlotEvent(this.slotId);
+  DeleteSlotEvent(this.slotId);
+}
 
-  @override
-  List<Object?> get props => [slotId];
+class DeleteMultipleSlotsEvent extends SlotEvent {
+  final List<String> slotIds;
+
+  DeleteMultipleSlotsEvent(this.slotIds);
 }
 
 class UpdateSlotEvent extends SlotEvent {
@@ -62,21 +45,28 @@ class UpdateSlotEvent extends SlotEvent {
   final String startTime;
   final String endTime;
 
-  const UpdateSlotEvent({
+  UpdateSlotEvent({
     required this.slotId,
     required this.startTime,
     required this.endTime,
   });
-
-  @override
-  List<Object?> get props => [slotId, startTime, endTime];
 }
 
 class BlockSlotEvent extends SlotEvent {
   final String slotId;
 
-  const BlockSlotEvent(this.slotId);
-
+  BlockSlotEvent(this.slotId);
+}
+// Add this new event to your existing events
+class RefreshSlotsEvent extends SlotEvent {
+  final DateTime startDate;
+  final DateTime endDate;
+  
+   RefreshSlotsEvent({
+    required this.startDate,
+    required this.endDate,
+  });
+  
   @override
-  List<Object?> get props => [slotId];
+  List<Object> get props => [startDate, endDate];
 }

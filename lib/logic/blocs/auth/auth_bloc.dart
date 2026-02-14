@@ -25,6 +25,9 @@ class DoctorAuthBloc extends Bloc<DoctorAuthEvent, DoctorAuthState> {
       );
       
       emit(DoctorAuthSuccess(doctor));
+    } on DoctorBlockedException catch (e) {
+      // Handle blocked doctor separately with special error
+      emit(DoctorAuthBlocked(e.toString()));
     } catch (e) {
       emit(DoctorAuthFailure(_extractErrorMessage(e.toString())));
     }

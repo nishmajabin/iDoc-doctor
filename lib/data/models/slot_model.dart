@@ -31,7 +31,7 @@ class SlotModel extends Equatable {
       doctorId: data['doctorId'] ?? '',
       date: (data['date'] as Timestamp).toDate(),
       startTime: data['startTime'] ?? '',
-      endTime: data['endTime'] ?? '',
+      endTime: data[                                   'endTime'] ?? '',
       status: data['status'] ?? 'available',
       createdAt: data['createdAt'] != null
           ? (data['createdAt'] as Timestamp).toDate()

@@ -14,6 +14,7 @@ import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_applicati
 import 'package:idoc_doctor_side/logic/blocs/doctor_login_form/login_form_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/slot_form/slot_form_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/splash/splash_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/splash/splash_event.dart';
 import 'package:idoc_doctor_side/presentation/screens/splash/splash_screen.dart';
@@ -37,6 +38,7 @@ class IDocDoctor extends StatelessWidget {
         BlocProvider(create: (context) => DoctorLoginFormBloc()),
         BlocProvider(create: (context) => BottomNavBloc()),
         BlocProvider(create: (context) => LogoutBloc()),
+        BlocProvider(create: (context) => SlotFormBloc()),
         BlocProvider(create: (context) => DoctorAppointmentBloc(DoctorAppointmentService(FirebaseFirestore.instance))),
         BlocProvider(create: (context) => SlotBloc(slotService: SlotService(FirebaseFirestore.instance), doctorId: FirebaseAuth.instance.currentUser!.uid)),
         

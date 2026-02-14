@@ -14,7 +14,7 @@ class BottomNavInitial extends BottomNavState {
 
 class BottomNavChanged extends BottomNavState {
   const BottomNavChanged({
-    required int currentIndex,
-    int previousIndex = 0,
-  }) : super(currentIndex: currentIndex, previousIndex: previousIndex);
+    required super.currentIndex,
+    super.previousIndex,
+  });
 }

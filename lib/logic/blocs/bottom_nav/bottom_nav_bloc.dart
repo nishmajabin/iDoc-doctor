@@ -14,7 +14,7 @@ class BottomNavBloc extends Bloc<BottomNavEvent, BottomNavState> {
   ) async {
     emit(BottomNavChanged(
       currentIndex: event.index,
-      previousIndex: state.currentIndex,
+      previousIndex: 0,
     ));
   }
 

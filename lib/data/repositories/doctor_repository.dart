@@ -63,14 +63,15 @@ class DoctorRepository {
         'licenseProofUrl': licenseUrl,
         'profileImageUrl': profileImageUrl,
         'status': 'pending', // Status is 'pending' by default
+        'blocked': false, // Not blocked by default
+        'blockReason': null,
+        'blockedAt': null,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       };
 
       // Add to 'doctors' collection with pending status
-      final docRef = await _firestore
-          .collection('doctors')
-          .add(doctorData);
+      final docRef = await _firestore.collection('doctors').add(doctorData);
 
       return docRef.id;
     } catch (e) {
@@ -78,7 +79,7 @@ class DoctorRepository {
     }
   }
 
-  /// Login doctor - checks email, password, and approval status
+  /// Login doctor - checks email, password, approval status, and blocked status
   Future<DoctorModel> loginDoctor({
     required String email,
     required String password,
@@ -104,9 +105,26 @@ class DoctorRepository {
         throw Exception('Incorrect password');
       }
 
+      // CRITICAL: Check if doctor is blocked FIRST
+      final isBlocked = doctorData['blocked'] ?? false;
+      if (isBlocked) {
+        final blockReason = doctorData['blockReason'] as String?;
+        
+        // Construct blocked message
+        String blockedMessage = 'Your account has been blocked by the administrator.';
+        if (blockReason != null && blockReason.isNotEmpty) {
+          blockedMessage += '\n\nReason: $blockReason';
+        }
+        blockedMessage += '\n\nPlease contact support for assistance.';
+        
+        throw DoctorBlockedException(blockedMessage);
+      }
+
       // Check if doctor is approved
       if (doctorData['status'] != 'approved') {
-        throw Exception('Your account is pending approval. Please wait for admin approval.');
+        throw Exception(
+          'Your account is pending approval. Please wait for admin approval.',
+        );
       }
 
       // Create Firebase Auth user if not exists
@@ -129,6 +147,9 @@ class DoctorRepository {
 
       // Return doctor model
       return DoctorModel.fromMap(doctorData, doctorDoc.id);
+    } on DoctorBlockedException {
+      // Re-throw blocked exception as-is
+      rethrow;
     } catch (e) {
       throw Exception('Login failed: $e');
     }
@@ -158,7 +179,17 @@ class DoctorRepository {
       if (querySnapshot.docs.isEmpty) return null;
 
       final doctorDoc = querySnapshot.docs.first;
-      return DoctorModel.fromMap(doctorDoc.data(), doctorDoc.id);
+      final doctorData = doctorDoc.data();
+
+      // Check if doctor is blocked
+      final isBlocked = doctorData['blocked'] ?? false;
+      if (isBlocked) {
+        // If blocked, sign out immediately
+        await _auth.signOut();
+        return null;
+      }
+
+      return DoctorModel.fromMap(doctorData, doctorDoc.id);
     } catch (e) {
       throw Exception('Failed to get current doctor: $e');
     }
@@ -200,6 +231,8 @@ class DoctorRepository {
 
       return {
         'status': data['status'],
+        'blocked': data['blocked'] ?? false,
+        'blockReason': data['blockReason'],
         'id': doctorDoc.id,
         'data': data,
       };
@@ -220,6 +253,8 @@ class DoctorRepository {
       final data = doc.data()!;
       return {
         'status': data['status'],
+        'blocked': data['blocked'] ?? false,
+        'blockReason': data['blockReason'],
         'id': doc.id,
         'data': data,
       };
@@ -246,4 +281,14 @@ class DoctorRepository {
       throw Exception('Failed to upload file to Cloudinary: $e');
     }
   }
+}
+
+/// Custom exception for blocked doctors
+class DoctorBlockedException implements Exception {
+  final String message;
+
+  DoctorBlockedException(this.message);
+
+  @override
+  String toString() => message;
 }

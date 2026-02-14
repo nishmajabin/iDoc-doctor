@@ -8,8 +8,7 @@ import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_state.dart';
 import 'package:idoc_doctor_side/presentation/bottom_nav/bottom_nav.dart';
 import 'package:idoc_doctor_side/presentation/screens/auth/sign_in/sign_in_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/doctor/slots_view/create_slots_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/doctor/slots_view/slots_view_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/doctor/available_time/create_slots/create_slots_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/home/home_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/notification/notification_screen.dart';
 import 'package:idoc_doctor_side/presentation/widgets/doctor_appointment_screen.dart';
@@ -23,14 +22,6 @@ class BottomScreen extends StatelessWidget {
     return BlocListener<LogoutBloc, LogoutState>(
       listener: (context, state) {
         if (state is LogoutSuccess) {
-          final bottomNavBloc = context.read<BottomNavBloc>();
-          final currentIndex = bottomNavBloc.state.currentIndex;
-
-          if (currentIndex == 3) {
-            final previousIndex = bottomNavBloc.state.previousIndex;
-            bottomNavBloc.add(BottomNavTabChanged(previousIndex));
-          }
-
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -40,10 +31,11 @@ class BottomScreen extends StatelessWidget {
           );
 
           try {
-            bottomNavBloc.add(const BottomNavReset());
+            context.read<BottomNavBloc>().add(const BottomNavReset());
           } catch (e) {
             throw Exception('BottomNavBloc reset error: $e');
           }
+          
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (context.mounted) {
               Navigator.of(context).pushAndRemoveUntil(
@@ -66,15 +58,7 @@ class BottomScreen extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             backgroundColor: const Color(0xFFE6EFF9),
-            body: Stack(
-              children: [
-                _buildBody(
-                  state.currentIndex == 3
-                      ? state.previousIndex
-                      : state.currentIndex,
-                ),
-              ],
-            ),
+            body: _buildBody(state.currentIndex),
             bottomNavigationBar: CustomBottomNavBar(
               currentIndex: state.currentIndex,
               onTap: (index) {
@@ -96,8 +80,7 @@ class BottomScreen extends StatelessWidget {
       case 2:
         return const NotificationScreen();
       case 3:
-        //  return DoctorAppointmentsScreen(doctorId: doctor.id!);
-        return ViewSlotsPage();
+        return DoctorAppointmentsScreen();
       default:
         return const DoctorHomeScreen();
     }

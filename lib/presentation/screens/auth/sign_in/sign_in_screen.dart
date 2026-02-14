@@ -29,12 +29,116 @@ class DoctorLoginView extends StatelessWidget {
   void _handleLogin(BuildContext context, DoctorLoginFormState formState) {
     if (formState.isEmailValid && formState.isPasswordValid) {
       context.read<DoctorAuthBloc>().add(
-        DoctorLoginRequested(
-          email: formState.email,
-          password: formState.password,
-        ),
-      );
+            DoctorLoginRequested(
+              email: formState.email,
+              password: formState.password,
+            ),
+          );
     }
+  }
+
+  void _showBlockedDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.block,
+                color: Colors.red.shade700,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Account Blocked',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Colors.black87,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.blue.shade200,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Colors.blue.shade700,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Contact admin support for more information',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.blue.shade900,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
+            ),
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: Colors.red.shade700,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -64,6 +168,9 @@ class DoctorLoginView extends StatelessWidget {
                 builder: (context) => BottomScreen(doctor: state.doctor),
               ),
             );
+          } else if (state is DoctorAuthBlocked) {
+            // Show blocked dialog
+            _showBlockedDialog(context, state.message);
           } else if (state is DoctorAuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -85,17 +192,14 @@ class DoctorLoginView extends StatelessWidget {
                 const SizedBox(height: 50),
                 BlocBuilder<DoctorAuthBloc, DoctorAuthState>(
                   builder: (context, authState) {
-                    return BlocBuilder<
-                      DoctorLoginFormBloc,
-                      DoctorLoginFormState
-                    >(
+                    return BlocBuilder<DoctorLoginFormBloc,
+                        DoctorLoginFormState>(
                       builder: (context, formState) {
                         return CustomButton(
                           text: 'Login',
-                          onPressed:
-                              authState is DoctorAuthLoading
-                                  ? null
-                                  : () => _handleLogin(context, formState),
+                          onPressed: authState is DoctorAuthLoading
+                              ? null
+                              : () => _handleLogin(context, formState),
                           isLoading: authState is DoctorAuthLoading,
                         );
                       },

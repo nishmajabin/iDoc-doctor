@@ -11,4 +11,6 @@ class AppColors {
   static Color labelTextColor = Color.fromARGB(255, 62, 62, 62);
   static Color logRegLinkColor = Color(0xFF0D72A6);
   static Color strokeColor = Color.fromARGB(255, 62, 121, 151);
+  static Color shimmerColor = const Color.fromARGB(255, 227, 227, 227);
+  static Color appointmentCardColor = const Color.fromARGB(255, 192, 236, 255);
 }

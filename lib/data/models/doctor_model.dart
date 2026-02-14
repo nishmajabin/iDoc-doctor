@@ -6,7 +6,7 @@ class DoctorModel {
   final String place;
   final String email;
   final String password;
-  final String? confirmPassword; // Added confirmPassword field (not stored in DB)
+  final String? confirmPassword;
   final String phone;
   final String gender;
   final String specialist;
@@ -16,6 +16,9 @@ class DoctorModel {
   final String? licenseProofUrl;
   final String? profileImageUrl;
   final String status;
+  final bool blocked; // New field
+  final String? blockReason; // New field
+  final DateTime? blockedAt; // New field
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -25,7 +28,7 @@ class DoctorModel {
     required this.place,
     required this.email,
     required this.password,
-    this.confirmPassword, // Optional - only used for validation, not stored
+    this.confirmPassword,
     required this.phone,
     required this.gender,
     required this.specialist,
@@ -35,12 +38,14 @@ class DoctorModel {
     this.licenseProofUrl,
     this.profileImageUrl,
     this.status = 'pending',
+    this.blocked = false, // Default to not blocked
+    this.blockReason,
+    this.blockedAt,
     DateTime? createdAt,
     this.updatedAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
   // Convert DoctorModel to Map for Firebase
-  // Note: confirmPassword is NOT included as it's only for validation
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -56,6 +61,9 @@ class DoctorModel {
       'licenseProofUrl': licenseProofUrl,
       'profileImageUrl': profileImageUrl,
       'status': status,
+      'blocked': blocked,
+      'blockReason': blockReason,
+      'blockedAt': blockedAt != null ? Timestamp.fromDate(blockedAt!) : null,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };
@@ -69,7 +77,6 @@ class DoctorModel {
       place: map['place'] ?? '',
       email: map['email'] ?? '',
       password: map['password'] ?? '',
-      // confirmPassword is not retrieved from DB
       phone: map['phone'] ?? '',
       gender: map['gender'] ?? '',
       specialist: map['specialist'] ?? '',
@@ -79,6 +86,9 @@ class DoctorModel {
       licenseProofUrl: map['licenseProofUrl'],
       profileImageUrl: map['profileImageUrl'],
       status: map['status'] ?? 'pending',
+      blocked: map['blocked'] ?? false,
+      blockReason: map['blockReason'],
+      blockedAt: (map['blockedAt'] as Timestamp?)?.toDate(),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate(),
     );
@@ -101,6 +111,9 @@ class DoctorModel {
     String? licenseProofUrl,
     String? profileImageUrl,
     String? status,
+    bool? blocked,
+    String? blockReason,
+    DateTime? blockedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -120,6 +133,9 @@ class DoctorModel {
       licenseProofUrl: licenseProofUrl ?? this.licenseProofUrl,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       status: status ?? this.status,
+      blocked: blocked ?? this.blocked,
+      blockReason: blockReason ?? this.blockReason,
+      blockedAt: blockedAt ?? this.blockedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -132,6 +148,6 @@ class DoctorModel {
 
   @override
   String toString() {
-    return 'DoctorModel(id: $id, name: $name, email: $email, specialist: $specialist, status: $status)';
+    return 'DoctorModel(id: $id, name: $name, email: $email, specialist: $specialist, status: $status, blocked: $blocked)';
   }
 }
