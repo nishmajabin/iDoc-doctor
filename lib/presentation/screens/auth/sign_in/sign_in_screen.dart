@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:idoc_doctor_side/core/constants/color.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
@@ -174,8 +175,8 @@ class DoctorLoginView extends StatelessWidget {
           } else if (state is DoctorAuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.error),
-                backgroundColor: Colors.red,
+                content: Text('Login failed! Try again.', style: TextStyle(color: AppColors.cancelled),),
+                backgroundColor: AppColors.bgColor,
                 duration: const Duration(seconds: 4),
               ),
             );

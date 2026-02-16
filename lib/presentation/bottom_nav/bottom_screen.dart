@@ -11,7 +11,7 @@ import 'package:idoc_doctor_side/presentation/screens/auth/sign_in/sign_in_scree
 import 'package:idoc_doctor_side/presentation/screens/doctor/available_time/create_slots/create_slots_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/home/home_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/notification/notification_screen.dart';
-import 'package:idoc_doctor_side/presentation/widgets/doctor_appointment_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/appoinments/doctor_appointment_screen.dart';
 
 class BottomScreen extends StatelessWidget {
   final DoctorModel doctor;
