@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:idoc_doctor_side/core/constants/color.dart';
 import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_state.dart';
@@ -13,7 +14,8 @@ import 'package:idoc_doctor_side/presentation/screens/home/widgets/header_widget
 import 'package:idoc_doctor_side/presentation/screens/home/widgets/state_widgets.dart';
 
 class HomeBody extends StatelessWidget {
-  const HomeBody({super.key});
+  final DoctorModel currentDoctor;
+  const HomeBody({super.key, required this.currentDoctor});
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +83,7 @@ class HomeBody extends StatelessWidget {
                             context,
                             todayQueue,
                             "Today's Patients",
+                            currentDoctor,
                           )
                           : null,
                 ),
@@ -94,7 +97,7 @@ class HomeBody extends StatelessWidget {
                     subMessage: 'Enjoy your free time!',
                   )
                 else
-                  PatientCardRow(appointments: todayQueue),
+                  PatientCardRow(appointments: todayQueue, currentDoctor: currentDoctor,),
                 const SizedBox(height: 32),
                 SectionHeader(
                   title: 'Upcoming',
@@ -108,6 +111,7 @@ class HomeBody extends StatelessWidget {
                             context,
                             upcoming,
                             'All Appointments',
+                            currentDoctor
                           )
                           : null,
                 ),
@@ -121,7 +125,7 @@ class HomeBody extends StatelessWidget {
                     subMessage: 'Your schedule is clear ahead',
                   )
                 else
-                  PatientCardRow(appointments: upcoming),
+                  PatientCardRow(appointments: upcoming, currentDoctor: currentDoctor,),
               ],
             ),
           ),

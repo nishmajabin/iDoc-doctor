@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
@@ -11,11 +12,12 @@ import './avatar_widgets.dart';
 import '../../../../core/utils/home_utils.dart';
 
 class HomeHeaderSection extends StatelessWidget {
-  const HomeHeaderSection();
+final DoctorModel currentDoctor;
+  const HomeHeaderSection({super.key, required this.currentDoctor});
 
   @override
   Widget build(BuildContext context) {
-    return HomeHeaderWidget(onConfirmLogout: _confirmLogout);
+    return HomeHeaderWidget(onConfirmLogout: _confirmLogout, currentDoctor: currentDoctor,);
   }
 
   void _confirmLogout(BuildContext context) {
@@ -25,7 +27,8 @@ class HomeHeaderSection extends StatelessWidget {
 
 class HomeHeaderWidget extends StatelessWidget {
   final Function(BuildContext) onConfirmLogout;
-  const HomeHeaderWidget({required this.onConfirmLogout});
+  final DoctorModel currentDoctor;
+  const HomeHeaderWidget({required this.onConfirmLogout, required this.currentDoctor, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +127,10 @@ class HomeHeaderWidget extends StatelessWidget {
                     () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const SearchPatientsScreen(),
+                        builder:
+                            (_) =>  SearchPatientsScreen(
+                              currentDoctor: currentDoctor,
+                            ),
                       ),
                     ),
                 child: Container(

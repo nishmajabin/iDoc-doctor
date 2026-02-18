@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/data/providers/appoinment_fetcher.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_state.dart';
@@ -10,7 +11,8 @@ import 'package:idoc_doctor_side/presentation/screens/home/widgets/home_header.d
 
 
 class DoctorHomeScreen extends StatelessWidget {
-  const DoctorHomeScreen({super.key});
+  final DoctorModel doctor;
+  const DoctorHomeScreen({super.key, required this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class DoctorHomeScreen extends StatelessWidget {
             backgroundColor: AppColors.gradientStart,
             body: Column(
               children: [
-                const HomeHeader(),
+                 HomeHeader(currentDoctor: doctor,),
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -53,7 +55,7 @@ class DoctorHomeScreen extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(28),
                       ),
-                      child: const HomeBody(),
+                      child:  HomeBody(currentDoctor: doctor,),
                     ),
                   ),
                 ),

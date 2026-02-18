@@ -10,6 +10,8 @@ import 'package:idoc_doctor_side/firebase_options.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/bottom_nav/bottom_nav_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/chat/chat_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/chat_room_list.dart/chat_room_list_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_login_form/login_form_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
@@ -39,6 +41,8 @@ class IDocDoctor extends StatelessWidget {
         BlocProvider(create: (context) => BottomNavBloc()),
         BlocProvider(create: (context) => LogoutBloc()),
         BlocProvider(create: (context) => SlotFormBloc()),
+        BlocProvider(create: (context) => ChatBloc()),
+        BlocProvider(create: (context) => ChatRoomListBloc()),
         BlocProvider(create: (context) => DoctorAppointmentBloc(DoctorAppointmentService(FirebaseFirestore.instance))),
         BlocProvider(create: (context) => SlotBloc(slotService: SlotService(FirebaseFirestore.instance), doctorId: FirebaseAuth.instance.currentUser!.uid)),
         

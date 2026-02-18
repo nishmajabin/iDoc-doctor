@@ -6,8 +6,8 @@ class DoctorAppointmentModel {
   final String userId;
   final String slotId;
   final String patientName;
-  final String contactNumber; // ✅ ADDED
-  final String description; // ✅ ADDED
+  final String contactNumber; 
+  final String description; 
   final DateTime appointmentDate;
   final String startTime;
   final String endTime;
@@ -15,8 +15,8 @@ class DoctorAppointmentModel {
   final String? doctorName;
   final String? doctorSpecialist;
   final String? doctorProfileImageUrl;
-  final String? profileImageUrl; // User's profile image
-  final String? prescription; // ✅ ADDED for prescription functionality
+  final String? profileImageUrl; 
+  final String? prescription; 
 
   DoctorAppointmentModel({
     required this.appointmentId,
@@ -24,8 +24,8 @@ class DoctorAppointmentModel {
     required this.userId,
     required this.slotId,
     required this.patientName,
-    required this.contactNumber, // ✅ ADDED
-    required this.description, // ✅ ADDED
+    required this.contactNumber, 
+    required this.description, 
     required this.appointmentDate,
     required this.startTime,
     required this.endTime,
@@ -34,10 +34,9 @@ class DoctorAppointmentModel {
     this.doctorSpecialist,
     this.doctorProfileImageUrl,
     this.profileImageUrl,
-    this.prescription, // ✅ ADDED
+    this.prescription, 
   });
 
-  // Create from Firestore document
   factory DoctorAppointmentModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     
@@ -47,8 +46,8 @@ class DoctorAppointmentModel {
       userId: data['userId'] as String,
       slotId: data['slotId'] as String,
       patientName: data['patientName'] as String,
-      contactNumber: data['contactNumber'] as String? ?? '', // ✅ ADDED with fallback
-      description: data['description'] as String? ?? '', // ✅ ADDED with fallback
+      contactNumber: data['contactNumber'] as String? ?? '', 
+      description: data['description'] as String? ?? '', 
       appointmentDate: (data['appointmentDate'] as Timestamp).toDate(),
       startTime: data['startTime'] as String,
       endTime: data['endTime'] as String,
@@ -57,11 +56,10 @@ class DoctorAppointmentModel {
       doctorSpecialist: data['doctorSpecialist'] as String?,
       doctorProfileImageUrl: data['doctorProfileImageUrl'] as String?,
       profileImageUrl: data['profileImageUrl'] as String?,
-      prescription: data['prescription'] as String?, // ✅ ADDED
+      prescription: data['prescription'] as String?, 
     );
   }
 
-  // Convert to Firestore map
   Map<String, dynamic> toFirestore() {
     return {
       'appointmentId': appointmentId,
@@ -69,8 +67,8 @@ class DoctorAppointmentModel {
       'userId': userId,
       'slotId': slotId,
       'patientName': patientName,
-      'contactNumber': contactNumber, // ✅ ADDED
-      'description': description, // ✅ ADDED
+      'contactNumber': contactNumber, 
+      'description': description, 
       'appointmentDate': Timestamp.fromDate(appointmentDate),
       'startTime': startTime,
       'endTime': endTime,
@@ -79,7 +77,7 @@ class DoctorAppointmentModel {
       if (doctorSpecialist != null) 'doctorSpecialist': doctorSpecialist,
       if (doctorProfileImageUrl != null) 'doctorProfileImageUrl': doctorProfileImageUrl,
       if (profileImageUrl != null) 'profileImageUrl': profileImageUrl,
-      if (prescription != null) 'prescription': prescription, // ✅ ADDED
+      if (prescription != null) 'prescription': prescription, 
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -90,8 +88,8 @@ class DoctorAppointmentModel {
     String? userId,
     String? slotId,
     String? patientName,
-    String? contactNumber, // ✅ ADDED
-    String? description, // ✅ ADDED
+    String? contactNumber,
+    String? description,
     DateTime? appointmentDate,
     String? startTime,
     String? endTime,
@@ -100,7 +98,7 @@ class DoctorAppointmentModel {
     String? doctorSpecialist,
     String? doctorProfileImageUrl,
     String? profileImageUrl,
-    String? prescription, // ✅ ADDED
+    String? prescription,
   }) {
     return DoctorAppointmentModel(
       appointmentId: appointmentId ?? this.appointmentId,
@@ -108,8 +106,8 @@ class DoctorAppointmentModel {
       userId: userId ?? this.userId,
       slotId: slotId ?? this.slotId,
       patientName: patientName ?? this.patientName,
-      contactNumber: contactNumber ?? this.contactNumber, // ✅ ADDED
-      description: description ?? this.description, // ✅ ADDED
+      contactNumber: contactNumber ?? this.contactNumber, 
+      description: description ?? this.description, 
       appointmentDate: appointmentDate ?? this.appointmentDate,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
@@ -118,7 +116,7 @@ class DoctorAppointmentModel {
       doctorSpecialist: doctorSpecialist ?? this.doctorSpecialist,
       doctorProfileImageUrl: doctorProfileImageUrl ?? this.doctorProfileImageUrl,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      prescription: prescription ?? this.prescription, // ✅ ADDED
+      prescription: prescription ?? this.prescription, 
     );
   }
 }

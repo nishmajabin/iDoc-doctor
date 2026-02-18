@@ -4,18 +4,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:idoc_doctor_side/core/constants/color.dart';
 import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_state.dart';
 import 'widgets/header.dart';
 import 'widgets/info_card.dart';
 import 'widgets/text_content_card.dart';
 import 'widgets/prescription_button.dart';
+import 'widgets/chat_button.dart';
 import 'widgets/common_widgets.dart';
 
 class PatientDetailScreen extends StatelessWidget {
   final DoctorAppointmentModel appointment;
+  final DoctorModel currentDoctor; // ← added
 
-  const PatientDetailScreen({super.key, required this.appointment});
+  const PatientDetailScreen({
+    super.key,
+    required this.appointment,
+    required this.currentDoctor, // ← added
+  });
 
   String _getDisplayStatus() {
     if (appointment.status.toLowerCase() == 'completed') return 'completed';
@@ -48,7 +55,8 @@ class PatientDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayStatus = _getDisplayStatus();
-    final isPast = displayStatus == 'completed' || displayStatus == 'cancelled';
+    final isPast =
+        displayStatus == 'completed' || displayStatus == 'cancelled';
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -79,18 +87,17 @@ class PatientDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SectionLabel(
-                        label:
-                            isPast
-                                ? 'Appointment Summary'
-                                : 'Appointment Details',
-                        icon:
-                            isPast
-                                ? Icons.history_rounded
-                                : Icons.event_note_rounded,
+                        label: isPast
+                            ? 'Appointment Summary'
+                            : 'Appointment Details',
+                        icon: isPast
+                            ? Icons.history_rounded
+                            : Icons.event_note_rounded,
                       ),
                       const SizedBox(height: 16),
                       AppointmentInfoCard(appointment: appointment),
                       const SizedBox(height: 24),
+
                       if (appointment.description.isNotEmpty) ...[
                         SectionLabel(
                           label: 'Reason for Visit',
@@ -103,6 +110,7 @@ class PatientDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                       ],
+
                       if (appointment.prescription != null &&
                           appointment.prescription!.isNotEmpty) ...[
                         SectionLabel(
@@ -116,10 +124,23 @@ class PatientDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                       ],
+
+                      // ── Action buttons ──────────────────────────────────
                       if (!isPast) ...[
+                        // Chat button — always shown for active appointments
+                        ChatButton(
+                          appointment: appointment,
+                          currentDoctor: currentDoctor,
+                        ),
+                        const SizedBox(height: 12),
                         PrescriptionButton(appointment: appointment),
                         const SizedBox(height: 40),
                       ] else ...[
+                        // Past appointments: still allow chatting (e.g. follow-up)
+                        ChatButton(
+                          appointment: appointment,
+                          currentDoctor: currentDoctor,
+                        ),
                         const SizedBox(height: 40),
                       ],
                     ],
@@ -149,13 +170,18 @@ class PatientDetailScreen extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(message, style: GoogleFonts.poppins(fontSize: 14)),
+              child: Text(
+                message,
+                style: GoogleFonts.poppins(fontSize: 14),
+              ),
             ),
           ],
         ),
         backgroundColor: isError ? AppColors.cancelled : AppColors.completed,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 3),
       ),

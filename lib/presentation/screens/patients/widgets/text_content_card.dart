@@ -6,7 +6,7 @@ class TextContentCard extends StatelessWidget {
   final String content;
   final Color accentColor;
 
-  const TextContentCard({required this.content, required this.accentColor});
+  const TextContentCard({required this.content, required this.accentColor, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class TextContentCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0077B6).withOpacity(0.06),
+            color: const Color(0xFF0077B6).withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 5),
           ),
