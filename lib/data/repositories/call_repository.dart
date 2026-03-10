@@ -14,21 +14,11 @@ class CallRepository {
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
   RtcEngine? _engine;
+  RtcEngineEventHandler? _eventHandler;
   bool _isEngineCreated = false;
   bool _isJoined = false;
 
-  // ── Cached view widgets ───────────────────────────────────────────────────
-  //
-  // WHY THIS IS CRITICAL:
-  // AgoraVideoView creates a platform view backed by a SurfaceProducer (Android
-  // 15 / Flutter 3.19+). A new widget instance = a new platform view = a new
-  // Surface. When the old Surface is destroyed the entire video pipeline resets.
-  //
-  // Without caching, every BLoC state rebuild (mute toggle, timer tick, state
-  // type change) destroys and recreates the surface → black screen.
-  //
-  // With caching, the same AgoraVideoView instance is returned every time, so
-  // Flutter reconciles it by object identity and never tears down the Surface.
+
   Widget? _cachedLocalView;
   Widget? _cachedRemoteView;
   int? _cachedRemoteUid;
@@ -83,9 +73,18 @@ class CallRepository {
 
   // ── Agora engine ──────────────────────────────────────────────────────────
 
+  /// Derives a deterministic, non-zero UID from any string (e.g. doctorId).
+  /// Because doctorId ≠ patientId, the UIDs are guaranteed to differ.
+  static int _uidFromString(String id) {
+    var uid = id.hashCode & 0x7FFFFFFF;
+    if (uid == 0) uid = 1; // Agora treats 0 as "auto-assign"
+    return uid;
+  }
+
   Future<void> initAndJoin({
     required String appId,
     required String channelName,
+    required String userId,
     required OnRemoteUserJoined onRemoteUserJoined,
     required OnRemoteUserLeft onRemoteUserLeft,
     required OnError onError,
@@ -112,59 +111,59 @@ class CallRepository {
       );
 
       debugPrint('📡 [CallRepository] Registering event handlers');
-      _engine!.registerEventHandler(
-        RtcEngineEventHandler(
-          onError: (ErrorCodeType err, String msg) {
-            debugPrint('❌ [Agora] Error ${err.name}: $msg');
-            onError('Agora error ${err.name}: $msg');
-          },
-          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-            debugPrint(
-                '✅ [Agora] Joined channel: ${connection.channelId} after ${elapsed}ms');
-          },
-          onUserJoined:
-              (RtcConnection connection, int remoteUid, int elapsed) {
-            debugPrint('👤 [Agora] Remote user joined: $remoteUid');
-            onRemoteUserJoined(remoteUid);
-          },
-          onUserOffline: (RtcConnection connection, int remoteUid,
-              UserOfflineReasonType reason) {
-            debugPrint(
-                '👋 [Agora] Remote user left: $remoteUid (${reason.name})');
-            onRemoteUserLeft(remoteUid);
-          },
-          onLocalVideoStateChanged: (VideoSourceType source,
-              LocalVideoStreamState state,
-              LocalVideoStreamReason reason) {
-            debugPrint(
-                '📹 [Agora] Local video state: ${state.name} reason: ${reason.name}');
-          },
-          onRemoteVideoStateChanged: (RtcConnection connection,
-              int remoteUid,
-              RemoteVideoState state,
-              RemoteVideoStateReason reason,
-              int elapsed) {
-            debugPrint(
-                '📺 [Agora] Remote video state: ${state.name} reason: ${reason.name}');
-          },
-          onFirstRemoteVideoFrame: (RtcConnection connection, int remoteUid,
-              int width, int height, int elapsed) {
-            debugPrint(
-                '🖼️ [Agora] First remote frame: uid=$remoteUid ${width}x$height');
-          },
-        ),
+      _eventHandler = RtcEngineEventHandler(
+        onError: (ErrorCodeType err, String msg) {
+          debugPrint('❌ [Agora] Error ${err.name}: $msg');
+          onError('Agora error ${err.name}: $msg');
+        },
+        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+          debugPrint(
+              '✅ [Agora] Joined channel: ${connection.channelId} after ${elapsed}ms');
+        },
+        onUserJoined:
+            (RtcConnection connection, int remoteUid, int elapsed) {
+          debugPrint('👤 [Agora] Remote user joined: $remoteUid');
+          onRemoteUserJoined(remoteUid);
+        },
+        onUserOffline: (RtcConnection connection, int remoteUid,
+            UserOfflineReasonType reason) {
+          debugPrint(
+              '👋 [Agora] Remote user left: $remoteUid (${reason.name})');
+          onRemoteUserLeft(remoteUid);
+        },
+        onLocalVideoStateChanged: (VideoSourceType source,
+            LocalVideoStreamState state,
+            LocalVideoStreamReason reason) {
+          debugPrint(
+              '📹 [Agora] Local video state: ${state.name} reason: ${reason.name}');
+        },
+        onRemoteVideoStateChanged: (RtcConnection connection,
+            int remoteUid,
+            RemoteVideoState state,
+            RemoteVideoStateReason reason,
+            int elapsed) {
+          debugPrint(
+              '📺 [Agora] Remote video state: ${state.name} reason: ${reason.name}');
+        },
+        onFirstRemoteVideoFrame: (RtcConnection connection, int remoteUid,
+            int width, int height, int elapsed) {
+          debugPrint(
+              '🖼️ [Agora] First remote frame: uid=$remoteUid ${width}x$height');
+        },
       );
+      _engine!.registerEventHandler(_eventHandler!);
 
       debugPrint('🎥 [CallRepository] Starting camera preview');
       await _engine!.startPreview();
 
       if (!_isJoined) {
         _isJoined = true;
-        debugPrint('🚀 [CallRepository] Joining channel: $channelName');
+        final localUid = _uidFromString(userId);
+        debugPrint('🚀 [CallRepository] Joining channel: $channelName with uid=$localUid (from userId=$userId)');
         await _engine!.joinChannel(
           token: '',
           channelId: channelName,
-          uid: 0,
+          uid: localUid,
           options: const ChannelMediaOptions(
             clientRoleType: ClientRoleType.clientRoleBroadcaster,
             channelProfile: ChannelProfileType.channelProfileCommunication,
@@ -210,7 +209,10 @@ class CallRepository {
         await _engine!.stopPreview();
 
         debugPrint('📡 [CallRepository] Unregistering handlers');
-        _engine!.unregisterEventHandler(RtcEngineEventHandler());
+        if (_eventHandler != null) {
+          _engine!.unregisterEventHandler(_eventHandler!);
+          _eventHandler = null;
+        }
 
         debugPrint('🗑️ [CallRepository] Releasing engine');
         await _engine!.release();
@@ -235,33 +237,21 @@ class CallRepository {
     debugPrint('🔄 [CallRepository] Camera switched');
   }
 
-  // ── Cached view builders ──────────────────────────────────────────────────
-  //
-  // setupMode: videoViewSetupAdd
-  //   Keeps the native Surface alive across widget rebuilds. Do NOT use
-  //   videoViewSetupReplace — that intentionally tears the surface down,
-  //   which is exactly the black screen bug.
-  //
-  // renderMode: renderModeHidden (remote) / renderModeFit (local)
-  //   renderModeHidden = cover/crop — fills the container, no letterbox bars.
-  //   renderModeFit    = letterbox  — fits entirely, good for small PIP.
-  //
-  // No useFlutterTexture / useAndroidSurfaceView overrides.
-  //   Flutter 3.19+ uses SurfaceProducer. Forcing SurfaceView overrides this
-  //   and causes a surface mismatch → permanent black. Let system negotiate.
-
   Widget buildLocalView() {
     if (_engine == null) {
-      debugPrint('⚠️ [CallRepository] buildLocalView called with null engine');
+      debugPrint(' [CallRepository] buildLocalView called with null engine');
       return const SizedBox.shrink();
     }
-    return _cachedLocalView ??= AgoraVideoView(
-      controller: VideoViewController(
-        rtcEngine: _engine!,
-        canvas: const VideoCanvas(
-          uid: 0,
-          setupMode: VideoViewSetupMode.videoViewSetupAdd,
-          renderMode: RenderModeType.renderModeFit,
+    return _cachedLocalView ??= ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: AgoraVideoView(
+        controller: VideoViewController(
+          rtcEngine: _engine!,
+          canvas: const VideoCanvas(
+            uid: 0,
+            setupMode: VideoViewSetupMode.videoViewSetupAdd,
+            renderMode: RenderModeType.renderModeFit,
+          ),
         ),
       ),
     );

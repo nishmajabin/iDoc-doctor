@@ -95,6 +95,9 @@ import 'package:idoc_doctor_side/logic/blocs/bottom_nav/bottom_nav_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/bottom_nav/bottom_nav_state.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_state.dart';
+import 'package:idoc_doctor_side/logic/blocs/notification/notification_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/notification/notification_event.dart';
+import 'package:idoc_doctor_side/logic/blocs/notification/notification_state.dart';
 import 'package:idoc_doctor_side/presentation/bottom_nav/bottom_nav.dart';
 import 'package:idoc_doctor_side/presentation/screens/auth/sign_in/sign_in_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/doctor/available_time/create_slots/create_slots_screen.dart';
@@ -103,15 +106,35 @@ import 'package:idoc_doctor_side/presentation/screens/notification/notification_
 import 'package:idoc_doctor_side/presentation/screens/appoinments/doctor_appointment_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/chat/chat_room_list_screen.dart';
 
-class BottomScreen extends StatelessWidget {
+class BottomScreen extends StatefulWidget {
   final DoctorModel doctor;
   const BottomScreen({super.key, required this.doctor});
+
+  @override
+  State<BottomScreen> createState() => _BottomScreenState();
+}
+
+class _BottomScreenState extends State<BottomScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize notifications as soon as the doctor reaches the main screen.
+    final notifBloc = context.read<NotificationBloc>();
+    if (notifBloc.state is NotificationInitial) {
+      notifBloc.add(InitializeNotifications(doctorId: widget.doctor.id!));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<LogoutBloc, LogoutState>(
       listener: (context, state) {
         if (state is LogoutSuccess) {
+          // Stop notification listeners and remove FCM token on logout.
+          context.read<NotificationBloc>().add(
+                StopNotifications(doctorId: widget.doctor.id!),
+              );
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -164,7 +187,7 @@ class BottomScreen extends StatelessWidget {
   Widget _buildBody(int currentIndex) {
     switch (currentIndex) {
       case 0:
-        return  DoctorHomeScreen(doctor: doctor);
+        return  DoctorHomeScreen(doctor: widget.doctor);
       case 1:
         return CreateSlotsPage();
       case 2:
@@ -173,13 +196,13 @@ class BottomScreen extends StatelessWidget {
         return DoctorAppointmentsScreen();
       case 4:
         return ChatRoomListScreen(
-          doctorId: doctor.id!,
-          currentUserId: doctor.id!,
-          doctorName: doctor.name,
-          doctorProfileImageUrl: doctor.profileImageUrl,
+          doctorId: widget.doctor.id!,
+          currentUserId: widget.doctor.id!,
+          doctorName: widget.doctor.name,
+          doctorProfileImageUrl: widget.doctor.profileImageUrl,
         );
       default:
-        return  DoctorHomeScreen(doctor: doctor,);
+        return  DoctorHomeScreen(doctor: widget.doctor,);
     }
   }
 }

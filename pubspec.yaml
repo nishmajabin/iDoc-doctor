@@ -36,9 +36,12 @@ dependencies:
   file_picker: ^10.3.3
   firebase_auth: ^6.1.0
   firebase_core: ^4.1.0
+  firebase_messaging: ^16.1.2
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_local_notifications: ^20.1.0
+  flutter_timezone: ^5.0.1
   google_fonts: ^6.3.2
   google_sign_in: ^7.2.0
   http: ^1.5.0
@@ -47,8 +50,10 @@ dependencies:
   lottie: ^3.3.2
   material_symbols_icons: ^4.2874.0
   permission_handler: ^12.0.1
+  rxdart: ^0.28.0
   shimmer: ^3.0.0
   table_calendar: ^3.2.0
+  timezone: ^0.10.1
   url_launcher: ^6.3.2
   uuid: ^4.5.2
 

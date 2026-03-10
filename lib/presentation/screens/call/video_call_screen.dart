@@ -149,24 +149,22 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                     right: 16,
                     width: 110,
                     height: 160,
-                    child: Stack(
-                      children: [
-                        // Actual video surface — no clipping.
-                        Positioned.fill(
-                          child: _repository.buildLocalView(),
-                        ),
-                        // Decorative rounded border in Flutter layer tree.
-                        // Renders correctly on top of hardware overlays.
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                  color: Colors.white24, width: 1),
-                            ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white24, width: 1),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black45,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: _repository.buildLocalView(),
+                      ),
                     ),
                   ),
 

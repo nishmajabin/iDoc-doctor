@@ -10,10 +10,11 @@ class ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
       children: [
         const CompletedBadge(),
-        const SizedBox(width: 8),
         PrescriptionButton(appointment: appointment),
       ],
     );

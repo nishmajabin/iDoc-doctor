@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:idoc_doctor_side/data/models/appointment_model.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/action_row.dart';
-import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/message_button.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/patient_avatar.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/time_badge.dart';
 
@@ -9,13 +8,15 @@ class AppointmentCard extends StatelessWidget {
   final DoctorAppointmentModel appointment;
   final bool isUpcoming;
 
-
-  const AppointmentCard({required this.appointment, required this.isUpcoming, super.key});
+  const AppointmentCard({
+    required this.appointment,
+    required this.isUpcoming,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -31,6 +32,7 @@ class AppointmentCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             PatientAvatar(
               name: appointment.patientName,
@@ -59,16 +61,9 @@ class AppointmentCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
-            const MessageButton(),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-
-

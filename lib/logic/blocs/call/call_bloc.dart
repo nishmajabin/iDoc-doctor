@@ -252,10 +252,11 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         }
       });
 
-      // STEP 3: Join Agora channel.
+      // STEP 3: Join Agora channel with deterministic UID from doctorId.
       await _repository.initAndJoin(
         appId: event.appId,
         channelName: event.channelName,
+        userId: doctorId,
         onRemoteUserJoined: (uid) {
           if (!isClosed) add(RemoteUserJoined(uid));
         },
