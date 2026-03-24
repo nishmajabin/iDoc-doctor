@@ -8,7 +8,6 @@ import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/appoinment_content.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/edge_case_views.dart';
-import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/invalid_doctor_view.dart';
 
 class DoctorAppointmentsScreen extends StatelessWidget {
   const DoctorAppointmentsScreen({super.key});

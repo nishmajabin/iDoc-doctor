@@ -104,7 +104,6 @@ import 'package:idoc_doctor_side/presentation/screens/doctor/available_time/crea
 import 'package:idoc_doctor_side/presentation/screens/home/home_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/notification/notification_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/doctor_appointment_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/chat/chat_room_list_screen.dart';
 
 class BottomScreen extends StatefulWidget {
   final DoctorModel doctor;
@@ -194,13 +193,6 @@ class _BottomScreenState extends State<BottomScreen> {
         return const NotificationScreen();
       case 3:
         return DoctorAppointmentsScreen();
-      case 4:
-        return ChatRoomListScreen(
-          doctorId: widget.doctor.id!,
-          currentUserId: widget.doctor.id!,
-          doctorName: widget.doctor.name,
-          doctorProfileImageUrl: widget.doctor.profileImageUrl,
-        );
       default:
         return  DoctorHomeScreen(doctor: widget.doctor,);
     }

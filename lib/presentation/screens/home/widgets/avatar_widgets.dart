@@ -58,6 +58,7 @@ class DoctorAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
     return Container(
+    
       width: 44,
       height: 44,
       decoration: BoxDecoration(

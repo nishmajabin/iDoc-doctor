@@ -17,115 +17,166 @@ class DateRangeInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (rangeStart == null) {
-      return const SizedBox.shrink();
-    }
+    if (rangeStart == null) return const SizedBox.shrink();
 
     final endDate = rangeEnd ?? rangeStart!;
     final dayCount = endDate.difference(rangeStart!).inDays + 1;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          _buildDateRangeCard(dayCount, endDate),
+          _buildRangeCard(dayCount, endDate),
           if (hasExistingSlots) ...[
-            const SizedBox(height: 12),
-            _buildErrorMessage(),
+            const SizedBox(height: 10),
+            _buildConflictBanner(),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildDateRangeCard(int dayCount, DateTime endDate) {
+  Widget _buildRangeCard(int dayCount, DateTime endDate) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF00D4FF), Color(0xFF0099CC)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF00D4FF).withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: const Color(0xFFE0F4FF),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF00B4D8).withOpacity(0.35)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.date_range, color: Colors.white, size: 24),
-          const SizedBox(width: 12),
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0077B6), Color(0xFF00B4D8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.date_range_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Selected Date Range',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${DateFormat('MMM dd').format(rangeStart!)} - ${DateFormat('MMM dd, yyyy').format(endDate)}',
+                  dayCount == 1
+                      ? DateFormat('EEEE, MMM dd yyyy').format(rangeStart!)
+                      : '${DateFormat('MMM dd').format(rangeStart!)}  →  ${DateFormat('MMM dd, yyyy').format(endDate)}',
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF052C40),
+                    letterSpacing: 0.1,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '$dayCount day${dayCount > 1 ? 's' : ''} selected',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 12,
-                  ),
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0077B6).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '$dayCount day${dayCount > 1 ? 's' : ''} selected',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0077B6),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          TextButton(
-            onPressed: onClear,
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.white.withValues(alpha: 0.2),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          GestureDetector(
+            onTap: onClear,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFF00B4D8).withOpacity(0.3),
+                ),
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: Color(0xFF0077B6),
+              ),
             ),
-            child: const Text('Clear'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorMessage() {
+  Widget _buildConflictBanner() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.6), width: 2),
+        color: const Color(0xFFFFEBEB),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFD13D3D).withOpacity(0.4),
+          width: 1.5,
+        ),
       ),
       child: Row(
         children: [
-          Icon(Icons.block, size: 22, color: Colors.red[800]),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'ERROR: Some dates already have slots! You cannot create slots for dates that already have slots. Please choose different dates or delete existing slots first.',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.red[900],
-                fontWeight: FontWeight.w700,
-              ),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFD13D3D).withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.block_rounded,
+              size: 18,
+              color: Color(0xFFD13D3D),
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Conflict Detected',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFD13D3D),
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Some selected dates already have slots. Delete existing slots or choose different dates.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF8B2020),
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

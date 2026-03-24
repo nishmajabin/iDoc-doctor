@@ -3,7 +3,6 @@ import 'package:idoc_doctor_side/data/models/appointment_model.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/prescription/prescription_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/prescription/view_prescription_screen.dart';
 
-
 class PrescriptionButton extends StatelessWidget {
   final DoctorAppointmentModel appointment;
 
@@ -11,13 +10,16 @@ class PrescriptionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final hasPrescription = false; // subcollection now — always show write option
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         // View prescription
-        GestureDetector(
+        _PillBtn(
+          label: 'View Rx',
+          icon: Icons.visibility_outlined,
+          textColor: const Color(0xFF0077B6),
+          bgColor: const Color(0xFFE0F4FF),
+          useGradient: false,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
@@ -27,61 +29,88 @@ class PrescriptionButton extends StatelessWidget {
               ),
             ),
           ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F0F5),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.visibility_outlined,
-                    color: Color(0xFF0099CC), size: 14),
-                SizedBox(width: 4),
-                Text('View',
-                    style: TextStyle(
-                        color: Color(0xFF0099CC),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700)),
-              ],
-            ),
-          ),
         ),
         const SizedBox(width: 8),
 
-        // Write new prescription
-        GestureDetector(
+        // Write prescription
+        _PillBtn(
+          label: 'Prescribe',
+          icon: Icons.edit_note_rounded,
+          textColor: Colors.white,
+          bgColor: null,
+          useGradient: true,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  PrescriptionScreen(appointment: appointment),
-            ),
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D0D0D),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.edit_note_rounded,
-                    color: Color(0xFF00D4FF), size: 15),
-                SizedBox(width: 5),
-                Text('Prescribe',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.1)),
-              ],
+              builder: (_) => PrescriptionScreen(appointment: appointment),
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PillBtn extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color textColor;
+  final Color? bgColor;
+  final bool useGradient;
+  final VoidCallback onTap;
+
+  const _PillBtn({
+    required this.label,
+    required this.icon,
+    required this.textColor,
+    required this.bgColor,
+    required this.useGradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          gradient: useGradient
+              ? const LinearGradient(
+                  colors: [Color(0xFF052C40), Color(0xFF0077B6)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: useGradient ? null : bgColor,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: useGradient
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF0077B6).withOpacity(0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: textColor, size: 14),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

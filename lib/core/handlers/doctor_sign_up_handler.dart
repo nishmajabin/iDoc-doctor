@@ -54,7 +54,6 @@ class DoctorSignUpHandler {
         state.error,
         isError: true,
       );
-      // Don't do anything else - the BLoC will automatically restore the form state
     }
   }
 

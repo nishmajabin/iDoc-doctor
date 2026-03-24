@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:idoc_doctor_side/data/models/slot_model.dart';
 import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_state.dart';
-import 'slot_chip_widget.dart';
+import 'slot_card_widget.dart';
 
 class SlotsListWidget extends StatelessWidget {
   final ViewSlotsUiState uiState;
   final Map<DateTime, List<SlotModel>> slotsCache;
 
-  const SlotsListWidget({required this.uiState, required this.slotsCache});
+  const SlotsListWidget({
+    required this.uiState,
+    required this.slotsCache,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,131 +23,191 @@ class SlotsListWidget extends StatelessWidget {
     final slots = slotsCache[normalizedDay] ?? [];
 
     if (slots.isEmpty) {
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(Icons.event_busy, size: 64, color: Colors.grey[300]),
-              const SizedBox(height: 16),
-              Text(
-                'No slots for this date',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _buildEmptyState();
     }
 
-    final availableSlots = slots.where((s) => s.status == 'available').toList();
-    final bookedSlots = slots.where((s) => s.status == 'booked').toList();
-    final blockedSlots = slots.where((s) => s.status == 'blocked').toList();
+    final available = slots.where((s) => s.status == 'available').toList();
+    final booked = slots.where((s) => s.status == 'booked').toList();
+    final blocked = slots.where((s) => s.status == 'blocked').toList();
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (availableSlots.isNotEmpty)
-            _buildSlotSection(
-              context,
-              'Available Slots',
-              availableSlots,
-              Colors.green,
-              uiState,
+          if (available.isNotEmpty) ...[
+            _buildSectionHeader(
+              label: 'Available',
+              count: available.length,
+              color: const Color(0xFF2D9E6B),
+              bgColor: const Color(0xFFE8F8F1),
+              icon: Icons.check_circle_outline_rounded,
             ),
-          if (bookedSlots.isNotEmpty)
-            _buildSlotSection(
-              context,
-              'Booked Slots',
-              bookedSlots,
-              Colors.blue,
-              uiState,
+            const SizedBox(height: 10),
+            _buildSlotGrid(context, available, const Color(0xFF2D9E6B)),
+            const SizedBox(height: 20),
+          ],
+          if (booked.isNotEmpty) ...[
+            _buildSectionHeader(
+              label: 'Booked',
+              count: booked.length,
+              color: const Color(0xFF0077B6),
+              bgColor: const Color(0xFFE0F4FF),
+              icon: Icons.person_outline_rounded,
             ),
-          if (blockedSlots.isNotEmpty)
-            _buildSlotSection(
-              context,
-              'Blocked Slots',
-              blockedSlots,
-              Colors.red,
-              uiState,
+            const SizedBox(height: 10),
+            _buildSlotGrid(context, booked, const Color(0xFF0077B6)),
+            const SizedBox(height: 20),
+          ],
+          if (blocked.isNotEmpty) ...[
+            _buildSectionHeader(
+              label: 'Blocked',
+              count: blocked.length,
+              color: const Color(0xFFD13D3D),
+              bgColor: const Color(0xFFFFEBEB),
+              icon: Icons.block_rounded,
             ),
+            const SizedBox(height: 10),
+            _buildSlotGrid(context, blocked, const Color(0xFFD13D3D)),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildSlotSection(
-    BuildContext context,
-    String title,
-    List<SlotModel> slots,
-    Color color,
-    ViewSlotsUiState uiState,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildSectionHeader({
+    required String label,
+    required int count,
+    required Color color,
+    required Color bgColor,
+    required IconData icon,
+  }) {
+    return Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 4,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(width: 8),
+              Icon(icon, size: 13, color: color),
+              const SizedBox(width: 5),
               Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                '${slots.length}',
+                label,
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
                   color: color,
+                  letterSpacing: 0.2,
                 ),
               ),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children:
-                slots
-                    .map(
-                      (slot) => SlotChipWidget(
-                        slot: slot,
-                        color: color,
-                        uiState: uiState,
-                      ),
-                    )
-                    .toList(),
+        const SizedBox(width: 10),
+        Container(
+          width: 22,
+          height: 22,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              '$count',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 16),
+        Expanded(
+          child: Container(
+            height: 1,
+            margin: const EdgeInsets.only(left: 12),
+            color: const Color(0xFFEEF2F7),
+          ),
+        ),
       ],
+    );
+  }
+
+  Widget _buildSlotGrid(
+    BuildContext context,
+    List<SlotModel> slots,
+    Color color,
+  ) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: slots
+          .map((slot) => SlotCardWidget(
+                slot: slot,
+                color: color,
+                uiState: uiState,
+              ))
+          .toList(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF052C40).withOpacity(0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0F4FF),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.event_busy_rounded,
+                size: 36,
+                color: Color(0xFF0077B6),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No Slots for This Day',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A2332),
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Tap a different date on the calendar,\nor create new slots for this day.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF6B7A91),
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

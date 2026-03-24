@@ -5,9 +5,9 @@ class SlotModel extends Equatable {
   final String slotId;
   final String doctorId;
   final DateTime date;
-  final String startTime; // Format: "HH:mm"
-  final String endTime;   // Format: "HH:mm"
-  final String status;    // 'available', 'booked', 'blocked'
+  final String startTime; 
+  final String endTime;  
+  final String status;   
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -22,7 +22,6 @@ class SlotModel extends Equatable {
     this.updatedAt,
   });
 
-  /// Create SlotModel from Firestore document
   factory SlotModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
@@ -42,7 +41,6 @@ class SlotModel extends Equatable {
     );
   }
 
-  /// Convert SlotModel to Firestore map
   Map<String, dynamic> toFirestore() {
     return {
       'doctorId': doctorId,
@@ -55,7 +53,6 @@ class SlotModel extends Equatable {
     };
   }
 
-  /// Create a copy with modified fields
   SlotModel copyWith({
     String? slotId,
     String? doctorId,

@@ -42,7 +42,6 @@ String timeOfDayGreeting() {
   return 'Evening';
 }
 
-// ── DateTime utilities ────────────────────────────────────────────────
 
 DateTime combineDateTime(DateTime date, String time) {
   try {
@@ -87,7 +86,6 @@ void splitAppointments(
   }
 }
 
-// ── Navigation utilities ──────────────────────────────────────────────
 
 void navigateToAllPatients(
   BuildContext context,

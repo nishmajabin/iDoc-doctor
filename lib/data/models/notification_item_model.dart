@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-/// Notification types used for icon/color mapping and navigation.
 enum NotificationType {
   appointmentBooked,
   chatMessage,
@@ -9,8 +8,6 @@ enum NotificationType {
   general,
 }
 
-/// A single persisted notification record stored in Firestore under
-/// `doctors/{doctorId}/notifications/{notificationId}`.
 class NotificationItemModel extends Equatable {
   final String notificationId;
   final String doctorId;
@@ -20,7 +17,6 @@ class NotificationItemModel extends Equatable {
   final DateTime timestamp;
   final bool isRead;
 
-  /// Optional deep-link data (e.g. appointmentId, chatRoomId).
   final Map<String, dynamic>? data;
 
   const NotificationItemModel({
@@ -34,7 +30,6 @@ class NotificationItemModel extends Equatable {
     this.data,
   });
 
-  // ── Firestore serialisation ───────────────────────────────────────────────
 
   factory NotificationItemModel.fromFirestore(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>;

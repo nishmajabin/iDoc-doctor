@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:idoc_doctor_side/data/models/appointment_model.dart';
@@ -9,8 +7,7 @@ import 'package:idoc_doctor_side/data/services/notification_service.dart';
 import 'package:idoc_doctor_side/data/services/notification_storage_service.dart';
 import 'package:uuid/uuid.dart';
 
-/// Repository that bridges the NotificationBloc with the NotificationService
-/// and Firestore listeners for appointments and chat messages.
+
 class NotificationRepository {
   final NotificationService _notificationService;
   final NotificationStorageService _storageService;
@@ -23,11 +20,6 @@ class NotificationRepository {
   StreamSubscription<QuerySnapshot>? _appointmentSub;
   StreamSubscription<QuerySnapshot>? _chatRoomSub;
   final List<StreamSubscription> _chatMessageSubs = [];
-
-  /// Timers keyed by appointmentId. Each timer fires exactly at the reminder
-  /// time and writes the notification record to Firestore. This is the correct
-  /// point to persist — not at booking time — so the reminder never appears in
-  /// the notification history screen before it is actually due.
   final Map<String, Timer> _reminderTimers = {};
 
   String? _doctorId;
@@ -41,13 +33,8 @@ class NotificationRepository {
         _storageService = storageService ?? NotificationStorageService(),
         _firestore = firestore ?? FirebaseFirestore.instance;
 
-  // ── Expose storage service for the history BLoC ───────────────────────────
 
   NotificationStorageService get storageService => _storageService;
-
-  // ──────────────────────────────────────────────────────────────────────────
-  //  INITIALIZATION
-  // ──────────────────────────────────────────────────────────────────────────
 
   Future<void> initialize(String doctorId) async {
     _doctorId = doctorId;
@@ -55,10 +42,6 @@ class NotificationRepository {
     await _notificationService.storeFcmToken(doctorId);
     _notificationService.listenForTokenRefresh(doctorId);
   }
-
-  // ──────────────────────────────────────────────────────────────────────────
-  //  APPOINTMENT LISTENER
-  // ──────────────────────────────────────────────────────────────────────────
 
   void listenForAppointments(String doctorId) {
     _appointmentSub?.cancel();
@@ -69,8 +52,7 @@ class NotificationRepository {
         .where('status', isEqualTo: 'confirmed')
         .snapshots()
         .listen((snapshot) {
-      // isFirstSnapshot is true when the set is still empty, meaning this is
-      // the initial load of pre-existing appointments on app start.
+
       final bool isFirstSnapshot = _knownAppointmentIds.isEmpty;
 
       for (final change in snapshot.docChanges) {
@@ -82,8 +64,6 @@ class NotificationRepository {
             final appointment = DoctorAppointmentModel.fromFirestore(doc);
 
             if (isFirstSnapshot) {
-              // Seed known IDs on first load. Do NOT show "new booking"
-              // notification for pre-existing appointments.
               _knownAppointmentIds.add(appointmentId);
               _scheduleReminderForAppointment(appointment);
               continue;
@@ -98,7 +78,6 @@ class NotificationRepository {
                   '${_formatDate(appointment.appointmentDate)} '
                   'at ${appointment.startTime}.';
 
-              // 1. Show an instant local notification to the doctor.
               _notificationService.showNotification(
                 title: title,
                 body: body,
@@ -106,8 +85,6 @@ class NotificationRepository {
                     '{"type":"new_appointment","appointmentId":"$appointmentId"}',
               );
 
-              // 2. Persist the booking notification immediately — it is a
-              //    present-tense event so it belongs in history right now.
               _persistNotification(
                 title: title,
                 body: body,
@@ -115,10 +92,6 @@ class NotificationRepository {
                 data: {'appointmentId': appointmentId},
               );
 
-              // 3. Schedule local OS reminder + a Dart Timer that writes the
-              //    reminder record to Firestore at the correct future time.
-              //    We deliberately do NOT write to Firestore here so the
-              //    reminder never shows up prematurely in the history screen.
               _scheduleReminderForAppointment(appointment);
 
               debugPrint(
@@ -134,26 +107,6 @@ class NotificationRepository {
     });
   }
 
-  /// Schedules two things for the given appointment:
-  ///
-  /// 1. **Local OS notification** — handled by [NotificationService], fires
-  ///    exactly [minutesBefore] minutes before the appointment via
-  ///    `zonedSchedule`. The OS shows the notification at the right time
-  ///    even if the app is in the background or terminated.
-  ///
-  /// 2. **Dart [Timer]** — fires at the same reminder time while the app is
-  ///    running and writes the reminder record to Firestore. This is the only
-  ///    correct point to persist the reminder because:
-  ///    - Writing it at booking time would cause it to appear immediately in
-  ///      the notification history screen (the original bug).
-  ///    - Writing it on tap would mean untapped reminders never appear in
-  ///      the history screen at all.
-  ///
-  /// If the app is not running when the timer would have fired (e.g. the
-  /// doctor force-quit the app), the OS notification still shows correctly
-  /// and the Firestore record will be written the next time the reminder is
-  /// re-scheduled on app restart — unless the time has already passed, in
-  /// which case [NotificationService.scheduleAppointmentReminder] skips it.
   void _scheduleReminderForAppointment(
     DoctorAppointmentModel appointment, {
     int minutesBefore = 10,
@@ -167,14 +120,12 @@ class NotificationRepository {
           appointmentDateTime.subtract(Duration(minutes: minutesBefore));
       final delay = reminderTime.difference(DateTime.now());
 
-      // Skip entirely if the reminder time has already passed.
       if (delay.isNegative || delay == Duration.zero) {
         debugPrint(
             '[NotifRepo] Reminder time already passed for ${appointment.appointmentId}');
         return;
       }
 
-      // ── 1. Schedule the OS-level local notification ─────────────────────
       _notificationService.scheduleAppointmentReminder(
         appointmentId: appointment.appointmentId,
         patientName: appointment.patientName,
@@ -182,18 +133,12 @@ class NotificationRepository {
         minutesBefore: minutesBefore,
       );
 
-      // ── 2. Schedule the Firestore persistence timer ──────────────────────
-      // Cancel any existing timer for this appointment (e.g. if re-scheduled).
       _reminderTimers[appointment.appointmentId]?.cancel();
 
       _reminderTimers[appointment.appointmentId] = Timer(delay, () {
         debugPrint(
             '[NotifRepo] Reminder timer fired for ${appointment.appointmentId}');
 
-        // Use a stable, deterministic ID so that if the timer fires multiple
-        // times (e.g. due to app restarts before the reminder time), the
-        // Firestore .set() call simply overwrites the same document instead
-        // of creating a duplicate entry in the notification history screen.
         _persistNotification(
           notificationId: 'reminder_${appointment.appointmentId}',
           title: '⏰ Upcoming Appointment',
@@ -203,7 +148,6 @@ class NotificationRepository {
           data: {'appointmentId': appointment.appointmentId},
         );
 
-        // Clean up the timer entry now that it has fired.
         _reminderTimers.remove(appointment.appointmentId);
       });
 
@@ -214,10 +158,6 @@ class NotificationRepository {
       debugPrint('[NotifRepo] Error scheduling reminder: $e');
     }
   }
-
-  // ──────────────────────────────────────────────────────────────────────────
-  //  CHAT MESSAGE LISTENER
-  // ──────────────────────────────────────────────────────────────────────────
 
   void listenForChatMessages(String doctorId) {
     _chatRoomSub?.cancel();
@@ -259,7 +199,6 @@ class NotificationRepository {
           ? (data['timestamp'] as Timestamp).toDate()
           : DateTime.now();
 
-      // Ignore messages sent by the doctor themselves.
       if (senderId == doctorId) return;
 
       final lastSeen = _lastSeenMessageTime[chatRoomId];
@@ -267,7 +206,6 @@ class NotificationRepository {
 
       _lastSeenMessageTime[chatRoomId] = timestamp;
 
-      // Skip on the very first snapshot (seeding lastSeen baseline).
       if (lastSeen == null) return;
 
       _firestore.collection('chatRooms').doc(chatRoomId).get().then((roomDoc) {
@@ -302,18 +240,12 @@ class NotificationRepository {
     _chatMessageSubs.add(sub);
   }
 
-  // ──────────────────────────────────────────────────────────────────────────
-  //  PERSIST NOTIFICATION
-  // ──────────────────────────────────────────────────────────────────────────
 
   void _persistNotification({
     required String title,
     required String body,
     required NotificationType type,
     Map<String, dynamic>? data,
-    // Provide a stable ID to make the write idempotent (e.g. for reminders).
-    // If null, a random UUID is used (correct for bookings & chat messages
-    // which are distinct events and should never be deduplicated).
     String? notificationId,
   }) {
     if (_doctorId == null) return;
@@ -324,9 +256,6 @@ class NotificationRepository {
       title: title,
       body: body,
       type: type,
-      // Always use DateTime.now() — never write future-dated records.
-      // Reminders are persisted via Timer exactly when they fire, so
-      // DateTime.now() is already the correct reminder time at that point.
       timestamp: DateTime.now(),
       isRead: false,
       data: data,
@@ -334,10 +263,6 @@ class NotificationRepository {
 
     _storageService.saveNotification(notification);
   }
-
-  // ──────────────────────────────────────────────────────────────────────────
-  //  CLEANUP
-  // ──────────────────────────────────────────────────────────────────────────
 
   Future<void> removeFcmToken(String doctorId) async {
     try {
@@ -352,7 +277,6 @@ class NotificationRepository {
   }
 
   Future<void> dispose() async {
-    // Cancel all pending reminder timers.
     for (final timer in _reminderTimers.values) {
       timer.cancel();
     }
@@ -369,10 +293,6 @@ class NotificationRepository {
     await _notificationService.cancelAllNotifications();
     debugPrint('[NotifRepo] Disposed all notification listeners and timers');
   }
-
-  // ──────────────────────────────────────────────────────────────────────────
-  //  HELPERS
-  // ──────────────────────────────────────────────────────────────────────────
 
   DateTime _combineDateTime(DateTime date, String time) {
     try {

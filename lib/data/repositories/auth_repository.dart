@@ -1,4 +1,3 @@
-// data/repositories/doctor_auth_repository.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -6,13 +5,11 @@ class DoctorAuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Login doctor
   Future<Map<String, dynamic>?> loginDoctor({
     required String email,
     required String password,
   }) async {
     try {
-      // Sign in with Firebase Auth
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -23,11 +20,9 @@ class DoctorAuthRepository {
         throw Exception('User ID not found');
       }
 
-      // Check if user exists in doctors collection and is approved
       final doctorDoc = await _firestore.collection('doctors').doc(userId).get();
 
       if (!doctorDoc.exists) {
-        // Check if application exists but not approved yet
         final applicationDoc = await _firestore
             .collection('applications')
             .doc(userId)
@@ -50,7 +45,6 @@ class DoctorAuthRepository {
 
       final doctorData = doctorDoc.data()!;
       
-      // Check if doctor is approved
       if (doctorData['status'] != 'approved') {
         await _auth.signOut();
         throw Exception('Your account is not approved yet');
@@ -80,7 +74,6 @@ class DoctorAuthRepository {
     }
   }
 
-  // Get current doctor
   Future<Map<String, dynamic>?> getCurrentDoctor() async {
     try {
       final currentUser = _auth.currentUser;
@@ -102,12 +95,10 @@ class DoctorAuthRepository {
     }
   }
 
-  // Logout doctor
   Future<void> logoutDoctor() async {
     await _auth.signOut();
   }
 
-  // Check if email exists in doctors or applications
   Future<bool> checkEmailExists(String email) async {
     try {
       final doctorsQuery = await _firestore
@@ -130,6 +121,5 @@ class DoctorAuthRepository {
     }
   }
 
-  // Stream to check auth state
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 }

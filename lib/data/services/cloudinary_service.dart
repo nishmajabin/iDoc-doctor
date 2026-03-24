@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:idoc_doctor_side/core/constants/cloudinary_config.dart';
 
 class CloudinaryService {
-  // Upload file to Cloudinary
   Future<String> uploadFile({
     required File file,
     required String folder,
@@ -15,12 +14,10 @@ class CloudinaryService {
       
       final request = http.MultipartRequest('POST', url);
       
-      // Add file
       request.files.add(
         await http.MultipartFile.fromPath('file', file.path),
       );
       
-      // Add parameters
       request.fields['upload_preset'] = CloudinaryConfig.uploadPreset;
       request.fields['folder'] = folder;
       
@@ -28,7 +25,6 @@ class CloudinaryService {
         request.fields['public_id'] = publicId;
       }
       
-      // Send request
       final response = await request.send();
       
       if (response.statusCode == 200) {
@@ -36,7 +32,6 @@ class CloudinaryService {
         final responseString = String.fromCharCodes(responseData);
         final jsonResponse = json.decode(responseString);
         
-        // Return secure URL
         return jsonResponse['secure_url'];
       } else {
         throw Exception('Failed to upload file: ${response.statusCode}');
@@ -46,7 +41,6 @@ class CloudinaryService {
     }
   }
   
-  // Upload license proof
   Future<String> uploadLicenseProof(File file, String doctorId) async {
     return await uploadFile(
       file: file,

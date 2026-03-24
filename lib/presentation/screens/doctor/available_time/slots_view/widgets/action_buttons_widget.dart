@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:idoc_doctor_side/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/slot/slot_event.dart';
 import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_cubit.dart';
 import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_state.dart';
-import '../dialogs/delete_confirmation_dialogs.dart';
+import 'package:intl/intl.dart';
 
 class ActionButtonsWidget extends StatelessWidget {
   final ViewSlotsUiState uiState;
   final Map<DateTime, List<SlotModel>> slotsCache;
 
-  const ActionButtonsWidget({required this.uiState, required this.slotsCache, super.key});
+  const ActionButtonsWidget({
+    required this.uiState,
+    required this.slotsCache,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,114 +25,212 @@ class ActionButtonsWidget extends StatelessWidget {
       uiState.selectedDay.day,
     );
     final slots = slotsCache[normalizedDay] ?? [];
-    final availableSlots = slots.where((s) => s.status == 'available').toList();
+    final availableSlots =
+        slots.where((s) => s.status == 'available').toList();
 
     if (availableSlots.isEmpty) return const SizedBox.shrink();
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
           Row(
             children: [
+              // Select slots toggle
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed:
-                      () =>
-                          context
-                              .read<ViewSlotsUiCubit>()
-                              .toggleSelectionMode(),
-                  icon: Icon(
-                    uiState.isSelectionMode
-                        ? Icons.close
-                        : Icons.check_box_outlined,
-                  ),
-                  label: Text(
-                    uiState.isSelectionMode ? 'Cancel' : 'Select Slots',
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF00D4FF),
-                    side: const BorderSide(color: Color(0xFF00D4FF)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
+                child: _ActionButton(
+                  label: uiState.isSelectionMode ? 'Cancel Select' : 'Select Slots',
+                  icon: uiState.isSelectionMode
+                      ? Icons.close_rounded
+                      : Icons.check_box_outline_blank_rounded,
+                  accentColor: const Color(0xFF0077B6),
+                  onTap: () =>
+                      context.read<ViewSlotsUiCubit>().toggleSelectionMode(),
                 ),
               ),
-              if (uiState.isSelectionMode && availableSlots.isNotEmpty) ...[
-                const SizedBox(width: 12),
-                OutlinedButton(
-                  onPressed: () {
-                    final slotIds =
-                        availableSlots.map((s) => s.slotId).toList();
-                    context.read<ViewSlotsUiCubit>().selectAllSlots(slotIds);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.blue,
-                    side: const BorderSide(color: Colors.blue),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+              const SizedBox(width: 10),
+              // Select all (only in selection mode)
+              if (uiState.isSelectionMode)
+                Expanded(
+                  child: _ActionButton(
+                    label: 'Select All',
+                    icon: Icons.select_all_rounded,
+                    accentColor: const Color(0xFF00B4D8),
+                    onTap: () {
+                      final slotIds =
+                          availableSlots.map((s) => s.slotId).toList();
+                      context
+                          .read<ViewSlotsUiCubit>()
+                          .selectAllSlots(slotIds);
+                    },
                   ),
-                  child: const Text('Select All'),
-                ),
-              ],
-              if (!uiState.isSelectionMode) ...[
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  onPressed:
-                      () => DeleteConfirmationDialogs.deleteAllSlotsForDate(
-                        context,
-                        availableSlots,
-                        uiState.selectedDay,
-                      ),
-                  icon: const Icon(Icons.delete_sweep),
-                  label: const Text('Delete All'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                )
+              else
+                // Delete all (not in selection mode)
+                Expanded(
+                  child: _ActionButton(
+                    label: 'Delete All',
+                    icon: Icons.delete_sweep_rounded,
+                    accentColor: const Color(0xFFD13D3D),
+                    onTap: () => _showDeleteAllDialog(
+                      context,
+                      availableSlots,
                     ),
                   ),
                 ),
-              ],
             ],
           ),
-          if (uiState.isSelectionMode &&
-              uiState.selectedSlotIds.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed:
-                    () => DeleteConfirmationDialogs.deleteSelectedSlots(
-                      context,
-                      uiState.selectedSlotIds.toList(),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAllDialog(
+    BuildContext context,
+    List<SlotModel> availableSlots,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFEBEB),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.delete_sweep_rounded,
+                    color: Color(0xFFD13D3D), size: 28),
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Delete All Available Slots?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1A2332),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'This will delete all ${availableSlots.length} available slot${availableSlots.length > 1 ? 's' : ''} for ${DateFormat('MMM dd, yyyy').format(uiState.selectedDay)}.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF6B7A91),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(ctx),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF2F8FF),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF6B7A91),
+                          ),
+                        ),
+                      ),
                     ),
-                icon: const Icon(Icons.delete_outline),
-                label: Text(
-                  'Delete ${uiState.selectedSlotIds.length} Selected Slot${uiState.selectedSlotIds.length > 1 ? 's' : ''}',
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  elevation: 2,
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<SlotBloc>().add(
+                          DeleteMultipleSlotsEvent(
+                            availableSlots.map((s) => s.slotId).toList(),
+                          ),
+                        );
+                        Navigator.pop(ctx);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD13D3D),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Delete All',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _ActionButton({
+    required this.label,
+    required this.icon,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        decoration: BoxDecoration(
+          color: accentColor.withOpacity(0.07),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: accentColor.withOpacity(0.25),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: accentColor, size: 16),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: accentColor,
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }

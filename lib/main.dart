@@ -15,9 +15,12 @@ import 'package:idoc_doctor_side/logic/blocs/chat/chat_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/chat_room_list.dart/chat_room_list_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_login_form/login_form_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/edit_profile/edit_profile_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/notification/notification_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/notification_history/notification_history_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/profile/profile_bloc.dart';
+import 'package:idoc_doctor_side/logic/blocs/settings/settings_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot_form/slot_form_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/splash/splash_bloc.dart';
@@ -55,6 +58,9 @@ class IDocDoctor extends StatelessWidget {
         BlocProvider(create: (context) => SlotBloc(slotService: SlotService(FirebaseFirestore.instance), doctorId: FirebaseAuth.instance.currentUser!.uid)),
         BlocProvider(create: (context) => NotificationBloc()),
         BlocProvider(create: (context) => NotificationHistoryBloc()),
+        BlocProvider(create: (context) => SettingsBloc()),
+        BlocProvider(create: (context) => DoctorProfileBloc()),       
+        BlocProvider(create: (context) => EditProfileBloc())
       ],
       child: MaterialApp(
         home: SplashScreen(),

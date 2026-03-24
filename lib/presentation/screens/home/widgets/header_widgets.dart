@@ -7,17 +7,22 @@ import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_state.dart';
+import 'package:idoc_doctor_side/presentation/screens/chat/chat_room_list_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/patients/search_patients_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/profile/profile_screen.dart';
 import './avatar_widgets.dart';
 import '../../../../core/utils/home_utils.dart';
 
 class HomeHeaderSection extends StatelessWidget {
-final DoctorModel currentDoctor;
+  final DoctorModel currentDoctor;
   const HomeHeaderSection({super.key, required this.currentDoctor});
 
   @override
   Widget build(BuildContext context) {
-    return HomeHeaderWidget(onConfirmLogout: _confirmLogout, currentDoctor: currentDoctor,);
+    return HomeHeaderWidget(
+      onConfirmLogout: _confirmLogout,
+      currentDoctor: currentDoctor,
+    );
   }
 
   void _confirmLogout(BuildContext context) {
@@ -28,7 +33,11 @@ final DoctorModel currentDoctor;
 class HomeHeaderWidget extends StatelessWidget {
   final Function(BuildContext) onConfirmLogout;
   final DoctorModel currentDoctor;
-  const HomeHeaderWidget({required this.onConfirmLogout, required this.currentDoctor, super.key});
+  const HomeHeaderWidget({
+    required this.onConfirmLogout,
+    required this.currentDoctor,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +74,19 @@ class HomeHeaderWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  DoctorAvatar(imageUrl: imageUrl, name: doctorName),
+                  GestureDetector(
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => DoctorProfileScreen(
+                                  currentDoctor: currentDoctor,
+                                ),
+                          ),
+                        ),
+                    child: DoctorAvatar(imageUrl: imageUrl, name: doctorName),
+                  ),
                   const Spacer(),
                   Text(
                     'iDoc',
@@ -80,7 +101,19 @@ class HomeHeaderWidget extends StatelessWidget {
                   GlassIconButton(
                     icon: Icons.chat_bubble_outline_rounded,
                     onTap: () {
-                      // TODO: navigate to chat screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => ChatRoomListScreen(
+                                doctorId: currentDoctor.id!,
+                                currentUserId: currentDoctor.id!,
+                                doctorName: currentDoctor.name,
+                                doctorProfileImageUrl:
+                                    currentDoctor.profileImageUrl,
+                              ),
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(width: 10),
@@ -128,7 +161,7 @@ class HomeHeaderWidget extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder:
-                            (_) =>  SearchPatientsScreen(
+                            (_) => SearchPatientsScreen(
                               currentDoctor: currentDoctor,
                             ),
                       ),

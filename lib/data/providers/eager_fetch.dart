@@ -8,7 +8,7 @@ import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 
 class EagerFetch extends StatelessWidget {
   final Widget child;
-  const EagerFetch({required this.child});
+  const EagerFetch({required this.child, super.key});
 
   @override
   Widget build(BuildContext context) {

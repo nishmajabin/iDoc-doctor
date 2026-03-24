@@ -24,51 +24,75 @@ class SlotCalendarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF052C40).withOpacity(0.07),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            children: [
+              _buildLegend(),
+              _buildCalendar(),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildInfoHeader(),
-          _buildCalendar(),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildInfoHeader() {
+  Widget _buildLegend() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF00D4FF).withValues(alpha: 0.1),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
+        color: const Color(0xFFF2F8FF),
+        border: Border(
+          bottom: BorderSide(color: const Color(0xFFEEF2F7), width: 1),
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, size: 18, color: Color(0xFF00D4FF)),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Tap to select start date, tap again to select end date. Orange dots = slots already exist',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-                fontWeight: FontWeight.w500,
+          _LegendItem(
+            color: const Color(0xFF0077B6),
+            label: 'Selected',
+          ),
+          const SizedBox(width: 16),
+          _LegendItem(
+            color: const Color(0xFF00B4D8).withOpacity(0.25),
+            label: 'In range',
+            textColor: const Color(0xFF0077B6),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE07B00),
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
+              const SizedBox(width: 5),
+              Text(
+                'Has slots',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -85,69 +109,163 @@ class SlotCalendarWidget extends StatelessWidget {
       rangeEndDay: rangeEnd,
       calendarFormat: CalendarFormat.month,
       startingDayOfWeek: StartingDayOfWeek.monday,
-      headerStyle: HeaderStyle(
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[500],
+        ),
+        weekendStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[400],
+        ),
+      ),
+      headerStyle: const HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,
-        titleTextStyle: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+        titleTextStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF1A2332),
+          letterSpacing: 0.2,
         ),
-        leftChevronIcon: const Icon(Icons.chevron_left, color: Colors.black),
-        rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.black),
+        leftChevronIcon: Icon(
+          Icons.chevron_left_rounded,
+          color: Color(0xFF0077B6),
+          size: 24,
+        ),
+        rightChevronIcon: Icon(
+          Icons.chevron_right_rounded,
+          color: Color(0xFF0077B6),
+          size: 24,
+        ),
+        headerPadding: EdgeInsets.symmetric(vertical: 12),
       ),
       calendarStyle: CalendarStyle(
         outsideDaysVisible: false,
+        cellMargin: const EdgeInsets.all(3),
         todayDecoration: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.3),
+          color: const Color(0xFF00B4D8).withOpacity(0.2),
           shape: BoxShape.circle,
+        ),
+        todayTextStyle: const TextStyle(
+          color: Color(0xFF0077B6),
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
         ),
         selectedDecoration: const BoxDecoration(
-          color: Color(0xFF00D4FF),
+          color: Color(0xFF0077B6),
           shape: BoxShape.circle,
         ),
+        selectedTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+        ),
         rangeStartDecoration: const BoxDecoration(
-          color: Color(0xFF00D4FF),
+          color: Color(0xFF0077B6),
           shape: BoxShape.circle,
         ),
         rangeEndDecoration: const BoxDecoration(
-          color: Color(0xFF00D4FF),
+          color: Color(0xFF0077B6),
           shape: BoxShape.circle,
         ),
-        rangeHighlightColor: const Color(0xFF00D4FF).withValues(alpha: 0.2),
-        withinRangeDecoration: BoxDecoration(
-          color: const Color(0xFF00D4FF).withValues(alpha: 0.1),
+        rangeHighlightColor: const Color(0xFF00B4D8),
+        withinRangeDecoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
-        defaultTextStyle: const TextStyle(color: Colors.black87),
-        weekendTextStyle: const TextStyle(color: Colors.black54),
+        withinRangeTextStyle: const TextStyle(
+          color: Color(0xFF052C40),
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
+        ),
+        defaultTextStyle: const TextStyle(
+          color: Color(0xFF1A2332),
+          fontSize: 13,
+        ),
+        weekendTextStyle: TextStyle(
+          color: Colors.grey[500],
+          fontSize: 13,
+        ),
+        disabledTextStyle: TextStyle(
+          color: Colors.grey[300],
+          fontSize: 13,
+        ),
         markerDecoration: const BoxDecoration(
-          color: Colors.orange,
+          color: Color(0xFFE07B00),
           shape: BoxShape.circle,
         ),
+        markersMaxCount: 1,
+        markerSize: 6,
+        markerMargin: const EdgeInsets.only(top: 1),
       ),
       onDaySelected: onDaySelected,
       onPageChanged: onPageChanged,
       eventLoader: (day) {
         final normalizedDay = normalizeDate(day);
         final slots = slotsCache[normalizedDay] ?? [];
-        return slots.take(3).toList();
+        return slots.take(1).toList();
       },
       calendarBuilders: CalendarBuilders(
+        rangeHighlightBuilder: (context, day, isWithinRange) {
+          if (!isWithinRange) return null;
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00B4D8).withOpacity(0.12),
+            ),
+          );
+        },
         markerBuilder: (context, date, events) {
           if (events.isEmpty) return null;
           return Positioned(
-            bottom: 1,
+            bottom: 3,
             child: Container(
-              width: 7,
-              height: 7,
+              width: 6,
+              height: 6,
               decoration: const BoxDecoration(
-                color: Colors.orange,
+                color: Color(0xFFE07B00),
                 shape: BoxShape.circle,
               ),
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+  final Color? textColor;
+
+  const _LegendItem({
+    required this.color,
+    required this.label,
+    this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: textColor ?? Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

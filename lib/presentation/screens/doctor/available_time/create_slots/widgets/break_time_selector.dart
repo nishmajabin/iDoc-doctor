@@ -4,6 +4,8 @@ class BreakTimeSelectorWidget extends StatelessWidget {
   final int selectedBreakTime;
   final Function(int) onBreakTimeChanged;
 
+  static const _breakOptions = [0, 5, 10, 15, 20, 30];
+
   const BreakTimeSelectorWidget({
     super.key,
     required this.selectedBreakTime,
@@ -12,66 +14,114 @@ class BreakTimeSelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.coffee, size: 18, color: Colors.grey[700]),
-              const SizedBox(width: 8),
               Text(
-                'Break Time (after each slot)',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
+                'Break Between Slots',
+                style: const TextStyle(
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
+                  color: Color(0xFF6B7A91),
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: selectedBreakTime > 0
+                      ? const Color(0xFFE07B00).withOpacity(0.12)
+                      : const Color(0xFF2D9E6B).withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  selectedBreakTime == 0 ? 'No break' : '$selectedBreakTime min break',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: selectedBreakTime > 0
+                        ? const Color(0xFFE07B00)
+                        : const Color(0xFF2D9E6B),
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Row(
-            children: [0, 5, 10, 15, 20, 30].map((breakTime) {
+            children: _breakOptions.map((breakTime) {
               final isSelected = selectedBreakTime == breakTime;
+              final isNone = breakTime == 0;
+              final selectedColor = isNone
+                  ? const Color(0xFF2D9E6B)
+                  : const Color(0xFFE07B00);
+
               return Expanded(
                 child: GestureDetector(
                   onTap: () => onBreakTimeChanged(breakTime),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    padding: const EdgeInsets.symmetric(vertical: 11),
                     decoration: BoxDecoration(
-                      color: isSelected 
-                          ? const Color(0xFFFF9800) 
+                      color: isSelected
+                          ? selectedColor.withOpacity(0.10)
                           : Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isSelected 
-                            ? const Color(0xFFFF9800) 
-                            : Colors.grey[300]!,
+                        color: isSelected
+                            ? selectedColor.withOpacity(0.5)
+                            : const Color(0xFFE0E8F0),
+                        width: isSelected ? 1.5 : 1,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: const Color(0xFFFF9800).withValues(alpha: 0.3),
-                                blurRadius: 5,
-                                offset: const Offset(0, 2),
+                                color: selectedColor.withOpacity(0.15),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
                               ),
                             ]
-                          : null,
+                          : [
+                              BoxShadow(
+                                color:
+                                    const Color(0xFF052C40).withOpacity(0.04),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                     ),
-                    child: Center(
-                      child: Text(
-                        breakTime == 0 ? 'None' : '$breakTime\nmin',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? Colors.white : Colors.black87,
-                          height: 1.3,
+                    child: Column(
+                      children: [
+                        Text(
+                          isNone ? '—' : '$breakTime',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: isNone ? 18 : 15,
+                            fontWeight: FontWeight.w800,
+                            color: isSelected
+                                ? selectedColor
+                                : const Color(0xFF1A2332),
+                          ),
                         ),
-                      ),
+                        Text(
+                          isNone ? 'None' : 'min',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? selectedColor.withOpacity(0.7)
+                                : const Color(0xFF9DAFC2),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -79,24 +129,31 @@ class BreakTimeSelectorWidget extends StatelessWidget {
             }).toList(),
           ),
           if (selectedBreakTime > 0) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                color: const Color(0xFFFFF3E0),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFFE07B00).withOpacity(0.3),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: Colors.orange[800]),
+                  const Icon(
+                    Icons.free_breakfast_outlined,
+                    size: 15,
+                    color: Color(0xFFE07B00),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'A $selectedBreakTime-minute break will be added after each appointment',
-                      style: TextStyle(
+                      '$selectedBreakTime-minute buffer added after each appointment',
+                      style: const TextStyle(
                         fontSize: 12,
-                        color: Colors.orange[800],
+                        color: Color(0xFFB35F00),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),

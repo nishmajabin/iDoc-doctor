@@ -8,7 +8,7 @@ import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 
 class AppointmentFetcher extends StatelessWidget {
   final Widget child;
-  const AppointmentFetcher({required this.child});
+   const AppointmentFetcher({required this.child, super.key});
 
   @override
   Widget build(BuildContext context) {

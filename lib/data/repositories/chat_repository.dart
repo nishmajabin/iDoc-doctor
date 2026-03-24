@@ -8,7 +8,6 @@ class ChatRepository {
   ChatRepository({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  // ── Chat Room ID generation ─────────────────────────────────────────────────
 
   String generateChatRoomId({
     required String doctorId,
@@ -17,8 +16,6 @@ class ChatRepository {
   }) {
     return '${doctorId}_${patientId}_$appointmentId';
   }
-
-  // ── Chat Room Operations ────────────────────────────────────────────────────
 
   Future<ChatRoomModel> getOrCreateChatRoom({
     required String doctorId,
@@ -66,33 +63,28 @@ class ChatRepository {
         .map((doc) => doc.exists ? ChatRoomModel.fromFirestore(doc) : null);
   }
 
-  /// No composite index needed — only filters by doctorId (single field index).
-  /// Sorting by lastMessageTime is done client-side after the snapshot arrives.
+ 
   Stream<List<ChatRoomModel>> watchDoctorChatRooms(String doctorId) {
     return _firestore
         .collection('chatRooms')
-        .where('doctorId', isEqualTo: doctorId) // single-field → no index needed
+        .where('doctorId', isEqualTo: doctorId) 
         .snapshots()
         .map((snap) {
       final rooms = snap.docs
           .map((doc) => ChatRoomModel.fromFirestore(doc))
           .toList();
 
-      // Sort client-side: rooms with no messages go to the bottom
       rooms.sort((a, b) {
         if (a.lastMessageTime == null && b.lastMessageTime == null) return 0;
         if (a.lastMessageTime == null) return 1;
         if (b.lastMessageTime == null) return -1;
-        return b.lastMessageTime!.compareTo(a.lastMessageTime!); // descending
+        return b.lastMessageTime!.compareTo(a.lastMessageTime!); 
       });
 
       return rooms;
     });
   }
 
-  // ── Message Operations ──────────────────────────────────────────────────────
-
-  /// Single-field orderBy on timestamp — no composite index needed.
   Stream<List<ChatMessageModel>> watchMessages(String chatRoomId) {
     return _firestore
         .collection('chatRooms')
@@ -181,7 +173,6 @@ class ChatRepository {
         unreadField: 0,
       });
     } catch (_) {
-      // Non-critical — silently fail
     }
   }
 

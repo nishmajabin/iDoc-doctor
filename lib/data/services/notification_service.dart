@@ -9,14 +9,11 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 
-/// Top-level handler for background / terminated FCM messages.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('[FCM Background] Message: ${message.messageId}');
 }
 
-/// Top-level background notification tap handler.
-/// Must be top-level + @pragma for AOT / background isolates.
 @pragma('vm:entry-point')
 void _onBackgroundNotificationTap(NotificationResponse response) {
   debugPrint('[Local Notif Background] Tapped payload: ${response.payload}');
@@ -30,9 +27,6 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotif =
       FlutterLocalNotificationsPlugin();
 
-  /// Broadcasts the payload string every time the user taps a local
-  /// notification. The [NotificationRepository] subscribes to this stream
-  /// to persist reminder notifications only when they actually fire.
   final StreamController<String?> _tapPayloadController =
       StreamController<String?>.broadcast();
 
@@ -40,29 +34,23 @@ class NotificationService {
 
   bool _initialized = false;
 
-  // ──────────────────────────────────────────────────────────────────────────
-  //  INITIALIZATION
-  // ──────────────────────────────────────────────────────────────────────────
-
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;
 
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-    // flutter_timezone returns a TimezoneInfo object whose toString() looks like:
-    // "TimezoneInfo(Asia/Calcutta, (locale: en_US, name: India Standard Time))"
-    // We extract only the IANA identifier (the part between '(' and ',').
     tz.initializeTimeZones();
     final tzInfo = await FlutterTimezone.getLocalTimezone();
-    final tzString = tzInfo.toString(); // e.g. "TimezoneInfo(Asia/Calcutta, ...)"
-    final ianaId = tzString.contains('(')
-        ? tzString.split('(')[1].split(',')[0].trim()
-        : tzString;
+    final tzString = tzInfo.toString();
+    final ianaId =
+        tzString.contains('(')
+            ? tzString.split('(')[1].split(',')[0].trim()
+            : tzString;
     tz.setLocalLocation(tz.getLocation(ianaId));
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -91,7 +79,8 @@ class NotificationService {
 
     await _localNotif
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(androidChannel);
 
     await requestPermission();
@@ -118,7 +107,7 @@ class NotificationService {
     );
     final granted =
         settings.authorizationStatus == AuthorizationStatus.authorized ||
-            settings.authorizationStatus == AuthorizationStatus.provisional;
+        settings.authorizationStatus == AuthorizationStatus.provisional;
     debugPrint('[Notification] Permission granted: $granted');
     return granted;
   }
@@ -142,13 +131,9 @@ class NotificationService {
     final token = await getFcmToken();
     if (token == null) return;
 
-    await FirebaseFirestore.instance
-        .collection('doctors')
-        .doc(doctorId)
-        .update({
-      'fcmToken': token,
-      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-    });
+    await FirebaseFirestore.instance.collection('doctors').doc(doctorId).update(
+      {'fcmToken': token, 'fcmTokenUpdatedAt': FieldValue.serverTimestamp()},
+    );
     debugPrint('[FCM] Token stored for doctor: $doctorId');
   }
 
@@ -159,9 +144,9 @@ class NotificationService {
           .collection('doctors')
           .doc(doctorId)
           .update({
-        'fcmToken': newToken,
-        'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-      });
+            'fcmToken': newToken,
+            'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+          });
     });
   }
 
@@ -249,12 +234,14 @@ class NotificationService {
     required DateTime appointmentDateTime,
     int minutesBefore = 10,
   }) async {
-    final scheduledTime =
-        appointmentDateTime.subtract(Duration(minutes: minutesBefore));
+    final scheduledTime = appointmentDateTime.subtract(
+      Duration(minutes: minutesBefore),
+    );
 
     if (scheduledTime.isBefore(DateTime.now())) {
       debugPrint(
-          '[Scheduled Notif] Skipped — reminder time already passed for $appointmentId');
+        '[Scheduled Notif] Skipped — reminder time already passed for $appointmentId',
+      );
       return;
     }
 
@@ -301,7 +288,8 @@ class NotificationService {
     );
 
     debugPrint(
-        '[Scheduled Notif] Reminder set for $appointmentId at $tzScheduledTime');
+      '[Scheduled Notif] Reminder set for $appointmentId at $tzScheduledTime',
+    );
   }
 
   Future<void> cancelAppointmentReminder(String appointmentId) async {
