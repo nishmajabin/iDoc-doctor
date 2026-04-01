@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
-import 'package:idoc_doctor_side/data/repositories/chat_repository.dart';
-import 'package:idoc_doctor_side/presentation/screens/chat/chat_screen.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/data/repositories/chat_repository.dart';
+import 'package:idoc_doctor_side/presentation/screens/chat/chat_screen/chat_screen.dart';
 
 class ChatButton extends StatefulWidget {
   final DoctorAppointmentModel appointment;

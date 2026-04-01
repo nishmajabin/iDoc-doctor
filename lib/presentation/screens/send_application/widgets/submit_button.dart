@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/handlers/doctor_sign_up_handler.dart';
+import 'package:idoc_doctor_side/core/handlers/auth/sign_up_handler.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_state.dart';
 

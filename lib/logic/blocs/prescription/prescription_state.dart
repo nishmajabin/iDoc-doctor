@@ -1,4 +1,4 @@
-import 'package:idoc_doctor_side/data/models/prescription_model.dart';
+import 'package:idoc_doctor_side/core/data/models/prescription_model.dart';
 
 abstract class PrescriptionState {
   const PrescriptionState();

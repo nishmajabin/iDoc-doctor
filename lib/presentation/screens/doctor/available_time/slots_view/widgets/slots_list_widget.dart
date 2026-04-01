@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
-import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_state.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/view_slots_ui/view_slots_ui_state.dart';
 import 'slot_card_widget.dart';
 
 class SlotsListWidget extends StatelessWidget {

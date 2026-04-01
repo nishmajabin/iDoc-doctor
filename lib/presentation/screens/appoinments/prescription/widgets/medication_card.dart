@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/data/models/prescription_model.dart';
+import 'package:idoc_doctor_side/core/data/models/prescription_model.dart';
 
 class MedicationCard extends StatelessWidget {
   final PrescriptionMedication med;

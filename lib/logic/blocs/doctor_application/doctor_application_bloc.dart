@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
-import 'package:idoc_doctor_side/data/repositories/doctor_repository.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/data/repositories/doctor_repository.dart';
 import 'doctor_application_event.dart';
 import 'doctor_application_state.dart';
 

@@ -1,30 +1,43 @@
-// import 'package:equatable/equatable.dart';
-// import 'package:idoc_doctor_side/data/models/chat_room_model.dart';
+import 'package:equatable/equatable.dart';
+import 'package:idoc_doctor_side/core/data/models/chat_room_model.dart';
 
-// abstract class ChatRoomListState extends Equatable {
-//   const ChatRoomListState();
-//   @override
-//   List<Object?> get props => [];
-// }
+/// Base state class for the ChatRoomList BLoC.
+sealed class ChatRoomListState extends Equatable {
+  const ChatRoomListState();
 
-// class ChatRoomListInitial extends ChatRoomListState {
-//   const ChatRoomListInitial();
-// }
+  @override
+  List<Object?> get props => [];
+}
 
-// class ChatRoomListLoading extends ChatRoomListState {
-//   const ChatRoomListLoading();
-// }
+/// The BLoC has been created but no event has been dispatched yet.
+class ChatRoomListInitial extends ChatRoomListState {
+  const ChatRoomListInitial();
+}
 
-// class ChatRoomListLoaded extends ChatRoomListState {
-//   final List<ChatRoomModel> rooms;
-//   const ChatRoomListLoaded(this.rooms);
-//   @override
-//   List<Object?> get props => [rooms];
-// }
+/// A stream subscription has been started; awaiting the first snapshot.
+class ChatRoomListLoading extends ChatRoomListState {
+  const ChatRoomListLoading();
+}
 
-// class ChatRoomListError extends ChatRoomListState {
-//   final String message;
-//   const ChatRoomListError(this.message);
-//   @override
-//   List<Object?> get props => [message];
-// }
+/// The stream delivered a (possibly empty) list of chat rooms.
+class ChatRoomListLoaded extends ChatRoomListState {
+  final List<ChatRoomModel> rooms;
+
+  const ChatRoomListLoaded(this.rooms);
+
+  /// Convenience getter — avoids scattering `.rooms.isEmpty` checks in the UI.
+  bool get isEmpty => rooms.isEmpty;
+
+  @override
+  List<Object?> get props => [rooms];
+}
+
+/// An unrecoverable error occurred while listening to the stream.
+class ChatRoomListError extends ChatRoomListState {
+  final String message;
+
+  const ChatRoomListError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

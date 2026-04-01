@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 import 'package:idoc_doctor_side/presentation/screens/patients/widgets/status_config.dart';
 import 'package:intl/intl.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
 import 'common_widgets.dart';
 
 class HeroHeader extends StatelessWidget {

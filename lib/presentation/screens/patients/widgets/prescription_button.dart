@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_event.dart';
 

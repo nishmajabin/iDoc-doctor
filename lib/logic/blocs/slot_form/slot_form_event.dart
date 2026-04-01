@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
 
 abstract class SlotFormEvent {}
 

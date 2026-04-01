@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 import 'package:idoc_doctor_side/core/utils/validators.dart';
 import 'package:idoc_doctor_side/presentation/screens/send_application/widgets/custom_bio_field.dart';
 import 'package:idoc_doctor_side/presentation/screens/send_application/widgets/custom_text_field.dart';

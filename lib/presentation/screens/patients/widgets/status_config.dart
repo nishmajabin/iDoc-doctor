@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 
 class StatusConfig {
   final String label;

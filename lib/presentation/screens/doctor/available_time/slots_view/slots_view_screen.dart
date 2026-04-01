@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/services/slot_service.dart';
+import 'package:idoc_doctor_side/core/data/services/slot_service.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';

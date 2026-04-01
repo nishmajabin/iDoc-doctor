@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot_form/slot_form_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot_form/slot_form_state.dart';
 

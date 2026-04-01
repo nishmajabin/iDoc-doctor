@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 
 class SectionLabel extends StatelessWidget {
   final String label;

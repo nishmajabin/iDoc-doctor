@@ -1,8 +1,8 @@
 // presentation/widgets/specialist_dropdown.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
-import 'package:idoc_doctor_side/data/repositories/department_repository.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
+import 'package:idoc_doctor_side/core/data/repositories/department_repository.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/doctor_application/doctor_application_state.dart';

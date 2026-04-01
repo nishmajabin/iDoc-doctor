@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:idoc_doctor_side/data/models/chat_message_model.dart';
-import 'package:idoc_doctor_side/data/models/chat_room_model.dart';
+import 'package:idoc_doctor_side/core/data/models/chat_message_model.dart';
+import 'package:idoc_doctor_side/core/data/models/chat_room_model.dart';
 
+/// Base state class for the Chat BLoC.
 abstract class ChatState extends Equatable {
   const ChatState();
 
@@ -9,22 +10,24 @@ abstract class ChatState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initial state — before any event is dispatched.
+/// BLoC is freshly created or has been disposed.
 class ChatInitial extends ChatState {
   const ChatInitial();
 }
 
-/// Chat room is being set up / messages are loading.
+/// Chat room initialisation is in progress (getOrCreate + first snapshot).
 class ChatLoading extends ChatState {
   const ChatLoading();
 }
 
-/// Chat room is ready and messages are streaming.
+/// Chat room is ready and the messages stream is active.
 class ChatLoaded extends ChatState {
   final ChatRoomModel chatRoom;
   final List<ChatMessageModel> messages;
   final String currentUserId;
   final bool currentUserIsDoctor;
+
+  /// True while a send-message request is in flight.
   final bool isSending;
 
   const ChatLoaded({
@@ -61,7 +64,7 @@ class ChatLoaded extends ChatState {
       ];
 }
 
-/// An error occurred.
+/// An unrecoverable error occurred during initialisation or streaming.
 class ChatError extends ChatState {
   final String message;
 

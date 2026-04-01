@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/appointment/appointment_state.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/auth/auth_state.dart';
 import 'package:idoc_doctor_side/core/utils/home_utils.dart';
+import 'package:idoc_doctor_side/presentation/screens/home/widgets/home_section_header.dart';
+import 'package:idoc_doctor_side/presentation/screens/home/widgets/home_shimmer_row.dart';
 import 'package:idoc_doctor_side/presentation/screens/home/widgets/patient_card_row.dart';
-import 'package:idoc_doctor_side/presentation/screens/home/widgets/header_widgets.dart';
 import 'package:idoc_doctor_side/presentation/screens/home/widgets/state_widgets.dart';
 
 class HomeBody extends StatelessWidget {
@@ -71,7 +72,7 @@ class HomeBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionHeader(
+                HomeSectionHeader(
                   title: "Today's Queue",
                   subtitle:
                       (!isLoading && todayQueue.isNotEmpty)
@@ -89,7 +90,7 @@ class HomeBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 if (isLoading)
-                  const ShimmerRow()
+                  const HomeShimmerRow()
                 else if (todayQueue.isEmpty)
                   const EmptySection(
                     icon: Icons.today_rounded,
@@ -99,7 +100,7 @@ class HomeBody extends StatelessWidget {
                 else
                   PatientCardRow(appointments: todayQueue, currentDoctor: currentDoctor,),
                 const SizedBox(height: 32),
-                SectionHeader(
+                HomeSectionHeader(
                   title: 'Upcoming',
                   subtitle:
                       (!isLoading && upcoming.isNotEmpty)
@@ -117,7 +118,7 @@ class HomeBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 if (isLoading)
-                  const ShimmerRow()
+                  const HomeShimmerRow()
                 else if (upcoming.isEmpty)
                   const EmptySection(
                     icon: Icons.event_available_rounded,

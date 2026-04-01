@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SlotCalendarWidget extends StatelessWidget {

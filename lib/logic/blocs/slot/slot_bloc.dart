@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
-import 'package:idoc_doctor_side/data/services/slot_service.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/data/services/slot_service.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_state.dart';
 
@@ -24,9 +24,7 @@ class SlotBloc extends Bloc<SlotEvent, SlotState> {
     on<BlockSlotEvent>(_onBlockSlot);
   }
 
-  // ---------------------------------------------------------------------------
   // Fetch
-  // ---------------------------------------------------------------------------
 
   Future<void> _onFetchSlotsByDateRange(
     FetchSlotsByDateRangeEvent event,
@@ -51,9 +49,7 @@ class SlotBloc extends Bloc<SlotEvent, SlotState> {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // Create
-  // ---------------------------------------------------------------------------
 
   Future<void> _onCreateSlotsForDateRange(
     CreateSlotsForDateRangeEvent event,
@@ -79,9 +75,7 @@ class SlotBloc extends Bloc<SlotEvent, SlotState> {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // Delete single
-  // ---------------------------------------------------------------------------
 
   Future<void> _onDeleteSlot(
     DeleteSlotEvent event,
@@ -98,9 +92,7 @@ class SlotBloc extends Bloc<SlotEvent, SlotState> {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // Delete multiple
-  // ---------------------------------------------------------------------------
 
   Future<void> _onDeleteMultipleSlots(
     DeleteMultipleSlotsEvent event,
@@ -146,9 +138,7 @@ class SlotBloc extends Bloc<SlotEvent, SlotState> {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // Block
-  // ---------------------------------------------------------------------------
 
   Future<void> _onBlockSlot(
     BlockSlotEvent event,
@@ -165,9 +155,7 @@ class SlotBloc extends Bloc<SlotEvent, SlotState> {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // Slot generation helper
-  // ---------------------------------------------------------------------------
 
   List<SlotModel> _generateSlots({
     required DateTime startDate,

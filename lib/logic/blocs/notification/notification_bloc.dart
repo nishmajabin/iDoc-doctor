@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/repositories/notification_repository.dart';
+import 'package:idoc_doctor_side/core/data/repositories/notification_repository.dart';
 
 import 'notification_event.dart';
 import 'notification_state.dart';
@@ -16,13 +16,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<StopNotifications>(_onStop);
   }
 
-  // ──────────────────────────────────────────────────────────────────────────
-  //  EVENT HANDLERS
-  // ──────────────────────────────────────────────────────────────────────────
 
-  /// Handles full initialization:
-  ///  1. FCM setup, permissions, token storage
-  ///  2. Starts Firestore listeners for appointments + chats
   Future<void> _onInitialize(
     InitializeNotifications event,
     Emitter<NotificationState> emit,
@@ -45,8 +39,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
   }
 
-  /// Starts Firestore listeners without re-running FCM initialization.
-  /// Useful if the bloc was already initialized but listeners were stopped.
+
   Future<void> _onStartListening(
     StartListeningForNotifications event,
     Emitter<NotificationState> emit,

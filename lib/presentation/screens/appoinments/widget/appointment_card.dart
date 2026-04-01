@@ -583,13 +583,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:idoc_doctor_side/core/constants/app_const.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
-import 'package:idoc_doctor_side/data/repositories/call_repository.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/repositories/call_repository.dart';
 import 'package:idoc_doctor_side/logic/blocs/call/call_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/call/call_event.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/patient_avatar.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/prescription_button.dart';
-import 'package:idoc_doctor_side/presentation/screens/call/video_call_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/call/screen/video_call_screen.dart';
 
 class AppointmentCard extends StatelessWidget {
   final DoctorAppointmentModel appointment;

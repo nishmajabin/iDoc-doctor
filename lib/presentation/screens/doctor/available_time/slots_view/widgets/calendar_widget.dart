@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_event.dart';
-import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_cubit.dart';
-import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_state.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/view_slots_ui/view_slots_ui_cubit.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/view_slots_ui/view_slots_ui_state.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarWidget extends StatelessWidget {

@@ -1,5 +1,5 @@
 
-import 'package:idoc_doctor_side/data/models/doctor_profile_stats_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_profile_stats_model.dart';
 
 abstract class DoctorProfileEvent {
   const DoctorProfileEvent();

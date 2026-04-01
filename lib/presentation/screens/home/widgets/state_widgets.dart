@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 
 class EmptySection extends StatelessWidget {
   final IconData icon;
@@ -12,6 +11,7 @@ class EmptySection extends StatelessWidget {
     required this.icon,
     required this.message,
     required this.subMessage,
+    super.key
   });
 
   @override
@@ -25,7 +25,7 @@ class EmptySection extends StatelessWidget {
         border: Border.all(color: AppColors.divider, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: AppColors.shadowDark.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -66,65 +66,4 @@ class EmptySection extends StatelessWidget {
   }
 }
 
-class ShimmerRow extends StatelessWidget {
-  const ShimmerRow();
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 182,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 4,
-        itemBuilder:
-            (_, i) => Padding(
-              padding: EdgeInsets.only(right: i < 3 ? 12 : 0),
-              child: Shimmer.fromColors(
-                baseColor: AppColors.shimmerBase,
-                highlightColor: AppColors.shimmerHighlight,
-                child: Container(
-                  width: 154,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.divider),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 64,
-                        height: 64,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: 90,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 70,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-      ),
-    );
-  }
-}

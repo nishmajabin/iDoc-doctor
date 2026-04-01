@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
 import 'package:idoc_doctor_side/presentation/screens/appoinments/widget/appointment_card.dart';
 import 'package:intl/intl.dart';
 

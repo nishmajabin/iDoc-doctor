@@ -89,7 +89,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/bottom_nav/bottom_nav_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/bottom_nav/bottom_nav_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/bottom_nav/bottom_nav_state.dart';
@@ -101,9 +101,9 @@ import 'package:idoc_doctor_side/logic/blocs/notification/notification_state.dar
 import 'package:idoc_doctor_side/presentation/bottom_nav/bottom_nav.dart';
 import 'package:idoc_doctor_side/presentation/screens/auth/sign_in/sign_in_screen.dart';
 import 'package:idoc_doctor_side/presentation/screens/doctor/available_time/create_slots/create_slots_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/home/home_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/notification/notification_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/appoinments/doctor_appointment_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/home/screens/home_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/notification/screen/notification_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/appoinments/screen/doctor_appointment_screen.dart';
 
 class BottomScreen extends StatefulWidget {
   final DoctorModel doctor;

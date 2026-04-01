@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
-import 'package:idoc_doctor_side/presentation/screens/appoinments/prescription/prescription_screen.dart';
-import 'package:idoc_doctor_side/presentation/screens/appoinments/prescription/view_prescription_screen.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/presentation/screens/appoinments/prescription/screen/prescription_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/appoinments/prescription/screen/view_prescription_screen.dart';
 
 class PrescriptionButton extends StatelessWidget {
   final DoctorAppointmentModel appointment;

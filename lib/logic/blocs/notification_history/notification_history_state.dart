@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:idoc_doctor_side/data/models/notification_item_model.dart';
+import 'package:idoc_doctor_side/core/data/models/notification_item_model.dart';
 
 abstract class NotificationHistoryState extends Equatable {
   const NotificationHistoryState();

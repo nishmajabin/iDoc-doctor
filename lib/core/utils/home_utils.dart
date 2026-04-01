@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/log_out/logout_event.dart';
-import 'package:idoc_doctor_side/presentation/screens/home/see_all_patients_screen.dart';
+import 'package:idoc_doctor_side/presentation/screens/home/screens/see_all_patients_screen.dart';
 
 
 String getFirstName(String fullName) {

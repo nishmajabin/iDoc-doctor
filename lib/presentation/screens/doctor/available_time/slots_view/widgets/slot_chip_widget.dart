@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
-import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_cubit.dart';
-import 'package:idoc_doctor_side/logic/cubits/view_slots_ui/view_slots_ui_state.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
+import 'package:idoc_doctor_side/core/utils/time_utils.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/view_slots_ui/view_slots_ui_cubit.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/view_slots_ui/view_slots_ui_state.dart';
 import '../dialogs/edit_slot_dialog.dart';
-import '../../../../../../core/utils/time_utils.dart';
 
 class SlotChipWidget extends StatelessWidget {
   final SlotModel slot;
@@ -15,6 +16,7 @@ class SlotChipWidget extends StatelessWidget {
     required this.slot,
     required this.color,
     required this.uiState,
+    super.key
   });
 
   bool _canEditSlot(SlotModel slot) {
@@ -42,10 +44,10 @@ class SlotChipWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.3) : color.withOpacity(0.1),
+          color: isSelected ? color.withValues(alpha: 0.3) : color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? color : color.withOpacity(0.3),
+            color: isSelected ? color : color.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -92,10 +94,10 @@ class SlotChipWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Icon(Icons.edit, size: 14, color: Colors.white),
+                  child:  Icon(Icons.edit, size: 14, color: AppColors.gradientColor),
                 ),
               ),
             ],

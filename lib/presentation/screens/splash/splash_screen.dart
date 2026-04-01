@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/splash/splash_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/splash/splash_state.dart';
-import 'package:idoc_doctor_side/presentation/screens/doctor_selection/doctor_selection.dart';
+import 'package:idoc_doctor_side/presentation/screens/doctor_selection/screen/doctor_selection_screen.dart';
 
 
 class SplashScreen extends StatelessWidget {

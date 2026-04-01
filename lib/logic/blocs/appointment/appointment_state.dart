@@ -44,7 +44,7 @@
 // }
 
 import 'package:equatable/equatable.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
 
 abstract class DoctorAppointmentState extends Equatable {
   const DoctorAppointmentState();

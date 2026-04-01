@@ -1,6 +1,6 @@
 // presentation/widgets/custom_button.dart
 import 'package:flutter/material.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;

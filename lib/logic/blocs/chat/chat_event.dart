@@ -7,7 +7,6 @@ abstract class ChatEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initialize the chat room for an appointment. Must be dispatched first.
 class InitializeChatRoom extends ChatEvent {
   final String doctorId;
   final String patientId;
@@ -41,22 +40,23 @@ class InitializeChatRoom extends ChatEvent {
       ];
 }
 
-/// Send a new text message.
 class SendMessage extends ChatEvent {
   final String messageText;
-
   const SendMessage(this.messageText);
 
   @override
   List<Object?> get props => [messageText];
 }
 
-/// Mark all messages from the other party as read.
 class MarkMessagesRead extends ChatEvent {
   const MarkMessagesRead();
 }
 
-/// Dispose the chat room (called on screen exit).
 class DisposeChatRoom extends ChatEvent {
   const DisposeChatRoom();
+}
+
+/// Fired by the UI after a new message arrives — tells the view to scroll down.
+class ScrollToBottomRequested extends ChatEvent {
+  const ScrollToBottomRequested();
 }

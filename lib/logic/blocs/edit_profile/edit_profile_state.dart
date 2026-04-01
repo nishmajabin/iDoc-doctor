@@ -1,8 +1,6 @@
-
 import 'dart:io';
-
 import 'package:equatable/equatable.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
 
 abstract class EditProfileState extends Equatable {
   const EditProfileState();

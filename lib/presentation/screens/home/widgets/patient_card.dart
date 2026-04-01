@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:idoc_doctor_side/core/constants/color.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 import 'package:idoc_doctor_side/core/utils/home_utils.dart';
-import 'package:idoc_doctor_side/data/models/appointment_model.dart';
+import 'package:idoc_doctor_side/core/data/models/appointment_model.dart';
 import 'package:idoc_doctor_side/presentation/screens/home/widgets/avatar_widgets.dart';
 
 class PatientCard extends StatelessWidget {
@@ -22,12 +22,12 @@ class PatientCard extends StatelessWidget {
           border: Border.all(color: AppColors.divider, width: 1),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               blurRadius: 18,
               offset: const Offset(0, 6),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: AppColors.shadowDark.withValues(alpha: 0.04),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

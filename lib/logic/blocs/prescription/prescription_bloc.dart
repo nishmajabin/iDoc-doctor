@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/prescription_model.dart';
-import 'package:idoc_doctor_side/data/services/prescription_service.dart';
+import 'package:idoc_doctor_side/core/data/models/prescription_model.dart';
+import 'package:idoc_doctor_side/core/data/services/prescription_service.dart';
 import 'prescription_event.dart';
 import 'prescription_state.dart';
 
@@ -22,6 +22,7 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
     on<RemoveMedicationFromList>(_onRemoveMedication);
     on<SubmitPrescription>(_onSubmit);
     on<LoadPrescriptions>(_onLoadPrescriptions);
+    on<ClearMedicationName>(_onClearMedicationName);
   }
 
   PrescriptionFormState get _form => state as PrescriptionFormState;
@@ -119,4 +120,7 @@ class PrescriptionBloc extends Bloc<PrescriptionEvent, PrescriptionState> {
       emit(PrescriptionViewError(err.toString()));
     }
   }
+
+  void _onClearMedicationName(ClearMedicationName e, Emitter emit) =>
+    emit(_form.copyWith(medicationName: ''));
 }

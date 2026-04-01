@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:idoc_doctor_side/core/utils/home_utils.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
-import 'package:idoc_doctor_side/presentation/screens/home/widgets/header_widgets.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/presentation/screens/home/widgets/home_header_widget.dart';
 
 class HomeHeader extends StatelessWidget {
   final DoctorModel currentDoctor;

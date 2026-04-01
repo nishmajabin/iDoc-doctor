@@ -81,3 +81,7 @@ class LoadPrescriptions extends PrescriptionEvent {
   final String appointmentId;
   const LoadPrescriptions(this.appointmentId);
 }
+
+class ClearMedicationName extends PrescriptionEvent {
+  const ClearMedicationName();
+}

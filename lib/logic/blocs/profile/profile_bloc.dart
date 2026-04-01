@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/doctor_model.dart';
-import 'package:idoc_doctor_side/data/models/doctor_profile_stats_model.dart';
-import 'package:idoc_doctor_side/data/repositories/profile_repository.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_model.dart';
+import 'package:idoc_doctor_side/core/data/models/doctor_profile_stats_model.dart';
+import 'package:idoc_doctor_side/core/data/repositories/profile_repository.dart';
 import 'package:idoc_doctor_side/logic/blocs/profile/profile_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/profile/profile_state.dart';
 
@@ -43,8 +43,6 @@ class DoctorProfileBloc extends Bloc<DoctorProfileEvent, DoctorProfileState> {
               ? (state as DoctorProfileLoaded).stats
               : DoctorProfileStats.empty();
 
-          // Trigger stats fetch once after first doc arrives — 
-          // done via scheduleMicrotask so emit.forEach is not blocked
           if (!_statsFetchedOnce) {
             _statsFetchedOnce = true;
             Future.microtask(
@@ -87,7 +85,7 @@ class DoctorProfileBloc extends Bloc<DoctorProfileEvent, DoctorProfileState> {
     }
   }
 
-  // ── Internal: apply fetched stats ─────────────────────────────────────────
+  // ── Internal: apply fetched stats ───────────────────────────────────────
 
   void _onStatsFetched(
     StatsFetched event,

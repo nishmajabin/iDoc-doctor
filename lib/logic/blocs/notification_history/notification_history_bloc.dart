@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/notification_item_model.dart';
-import 'package:idoc_doctor_side/data/services/notification_storage_service.dart';
+import 'package:idoc_doctor_side/core/data/models/notification_item_model.dart';
+import 'package:idoc_doctor_side/core/data/services/notification_storage_service.dart';
 
 import 'notification_history_event.dart';
 import 'notification_history_state.dart';
@@ -29,11 +29,6 @@ class NotificationHistoryBloc
     emit(const NotificationHistoryLoading());
 
     try {
-      // Use emit.forEach to keep a live Firestore subscription alive for the
-      // duration of this bloc's lifetime. The stream automatically re-emits
-      // whenever Firestore data changes (new notification, read/unread toggle,
-      // delete, etc.), so the UI always reflects the latest state without any
-      // manual refresh logic.
       await emit.forEach<List<NotificationItemModel>>(
         _storage.watchNotifications(event.doctorId),
         onData: (notifications) {
@@ -56,8 +51,6 @@ class NotificationHistoryBloc
 
   // ── Mark Read ─────────────────────────────────────────────────────────────
 
-  /// Marks a single notification as read. The Firestore write triggers the
-  /// [watchNotifications] stream to re-emit, so the UI updates automatically.
   Future<void> _onMarkRead(
     MarkNotificationRead event,
     Emitter<NotificationHistoryState> emit,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/models/slot_model.dart';
+import 'package:idoc_doctor_side/core/data/models/slot_model.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_event.dart';
-import 'package:idoc_doctor_side/logic/cubits/edit_slot/edit_slot_cubit.dart';
-import 'package:idoc_doctor_side/logic/cubits/edit_slot/edit_slot_state.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/edit_slot/edit_slot_cubit.dart';
+import 'package:idoc_doctor_side/logic/cubits/slot/edit_slot/edit_slot_state.dart';
 import 'package:idoc_doctor_side/core/utils/time_formatter.dart';
 import 'package:idoc_doctor_side/core/utils/time_utils.dart';
 import 'package:intl/intl.dart';

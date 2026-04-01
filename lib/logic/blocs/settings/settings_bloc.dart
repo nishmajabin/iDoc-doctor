@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:idoc_doctor_side/data/repositories/auth_repository.dart';
+import 'package:idoc_doctor_side/core/data/repositories/auth_repository.dart';
 import 'package:idoc_doctor_side/logic/blocs/settings/settings_event.dart';
 import 'package:idoc_doctor_side/logic/blocs/settings/settings_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
