@@ -8,8 +8,9 @@ import 'package:idoc_doctor_side/logic/blocs/call/call_state.dart';
 class CallBloc extends Bloc<CallEvent, CallState> {
   final CallRepository _repository;
   final String channelName;
+
   final String doctorId;
-  final String patientUserId;
+  final String patientUserId;   // ← patient's Firebase Auth UID (NOT appointmentId)
   final String doctorName;
   final String patientName;
   final String? doctorProfileImageUrl;
@@ -49,10 +50,11 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     emit(const CallJoining());
 
     try {
+      // STEP 1: Write Firestore doc → triggers IncomingCallScreen on user app.
       await _repository.createCallDocument(
         appointmentId: event.channelName,
         doctorId: doctorId,
-        userId: patientUserId,
+        userId: patientUserId,          // ← CRITICAL: must be patient's Firebase uid
         doctorName: doctorName,
         patientName: patientName,
         doctorProfileImageUrl: doctorProfileImageUrl,
@@ -60,6 +62,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
       debugPrint('📝 [CallBloc] Call document created for userId=$patientUserId');
 
+      // STEP 2: Watch for user accept/reject.
       _callStatusSub?.cancel();
       _callStatusSub = _repository
           .watchCallStatus(callId: event.channelName)
@@ -71,6 +74,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         }
       });
 
+      // STEP 3: Join Agora channel with deterministic UID from doctorId.
       await _repository.initAndJoin(
         appId: event.appId,
         channelName: event.channelName,
@@ -102,6 +106,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     await _callStatusSub?.cancel();
     _callStatusSub = null;
 
+    // Mark Firestore doc as ended → user app tears down automatically.
     try {
       await _repository.endCallDocument(callId: channelName);
     } catch (e) {
@@ -113,50 +118,43 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   }
 
   void _onRemoteUserJoined(RemoteUserJoined event, Emitter<CallState> emit) {
+    final current = state;
+    final muted = _getMutedFromState(current);
     emit(CallActive(
       remoteUid: event.uid,
-      isMuted: _getMutedFromState(state),
+      isMuted: muted,
       elapsedSeconds: _elapsedSeconds,
     ));
   }
 
   void _onRemoteUserLeft(RemoteUserLeft event, Emitter<CallState> emit) {
-    final lastRemoteUid =
-        state is CallActive ? (state as CallActive).remoteUid : null;
-
-    emit(CallPeerLeft(
-      remoteUid: lastRemoteUid,
-      elapsedSeconds: _elapsedSeconds,
-    ));
+    emit(CallPeerLeft(elapsedSeconds: _elapsedSeconds));
   }
 
   Future<void> _onMuteToggled(
-    CallMuteToggled event,
-    Emitter<CallState> emit,
-  ) async {
+      CallMuteToggled event, Emitter<CallState> emit) async {
     final newMuted = !_getMutedFromState(state);
     await _repository.muteLocalAudio(mute: newMuted);
-
-    if (state is CallActive) {
-      emit((state as CallActive).copyWith(isMuted: newMuted));
-    } else if (state is CallWaitingForPeer) {
-      emit((state as CallWaitingForPeer).copyWith(isMuted: newMuted));
+    final current = state;
+    if (current is CallActive) {
+      emit(current.copyWith(isMuted: newMuted));
+    } else if (current is CallWaitingForPeer) {
+      emit(current.copyWith(isMuted: newMuted));
     }
   }
 
   Future<void> _onCameraSwitched(
-    CallCameraSwitched event,
-    Emitter<CallState> emit,
-  ) async {
+      CallCameraSwitched event, Emitter<CallState> emit) async {
     await _repository.switchCamera();
   }
 
   void _onTimerTicked(CallTimerTicked event, Emitter<CallState> emit) {
     _elapsedSeconds = event.seconds;
-    if (state is CallActive) {
-      emit((state as CallActive).copyWith(elapsedSeconds: event.seconds));
-    } else if (state is CallWaitingForPeer) {
-      emit((state as CallWaitingForPeer).copyWith(elapsedSeconds: event.seconds));
+    final current = state;
+    if (current is CallActive) {
+      emit(current.copyWith(elapsedSeconds: event.seconds));
+    } else if (current is CallWaitingForPeer) {
+      emit(current.copyWith(elapsedSeconds: event.seconds));
     }
   }
 
@@ -164,8 +162,6 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     _stopTimer();
     emit(CallError(event.message));
   }
-
-  // ── Helpers ───────────────────────────────────────────────────────────────
 
   void _startTimer() {
     _timer?.cancel();

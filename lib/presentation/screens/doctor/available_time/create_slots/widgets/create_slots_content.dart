@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:idoc_doctor_side/core/theme/color.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_bloc.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot/slot_state.dart';
 import 'package:idoc_doctor_side/logic/blocs/slot_form/slot_form_bloc.dart';
@@ -16,7 +17,7 @@ class CreateSlotsContent extends StatelessWidget {
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F8FF),
+      backgroundColor: AppColors.bgColor,
       body: BlocListener<SlotBloc, SlotState>(
         listener: (context, state) {
           if (state is SlotsFetchedSuccess) {
@@ -45,8 +46,7 @@ class CreateSlotsContent extends StatelessWidget {
             // Scrollable content below header
             Padding(
               padding: EdgeInsets.only(top: topPadding + 72),
-              child: const SlotsFormBody(),
-            ),
+              child: const SlotsFormBody(),            ),
           ],
         ),
       ),
@@ -85,22 +85,6 @@ class CreateSlotsContent extends StatelessWidget {
             right: 12,
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                ),
                 const Spacer(),
                 Column(
                   children: [

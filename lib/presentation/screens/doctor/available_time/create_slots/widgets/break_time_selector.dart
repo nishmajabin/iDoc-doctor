@@ -37,8 +37,8 @@ class BreakTimeSelectorWidget extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: selectedBreakTime > 0
-                      ? const Color(0xFFE07B00).withOpacity(0.12)
-                      : const Color(0xFF2D9E6B).withOpacity(0.10),
+                      ? const Color(0xFFE07B00).withValues(alpha: 0.12)
+                      : const Color(0xFF2D9E6B).withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -72,19 +72,19 @@ class BreakTimeSelectorWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 11),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? selectedColor.withOpacity(0.10)
+                          ? selectedColor.withValues(alpha: 0.10)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isSelected
-                            ? selectedColor.withOpacity(0.5)
+                            ? selectedColor.withValues(alpha: 0.5)
                             : const Color(0xFFE0E8F0),
                         width: isSelected ? 1.5 : 1,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: selectedColor.withOpacity(0.15),
+                                color: selectedColor.withValues(alpha: 0.15),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -92,7 +92,7 @@ class BreakTimeSelectorWidget extends StatelessWidget {
                           : [
                               BoxShadow(
                                 color:
-                                    const Color(0xFF052C40).withOpacity(0.04),
+                                    const Color(0xFF052C40).withValues(alpha: 0.04),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
@@ -117,7 +117,7 @@ class BreakTimeSelectorWidget extends StatelessWidget {
                             fontSize: 9,
                             fontWeight: FontWeight.w600,
                             color: isSelected
-                                ? selectedColor.withOpacity(0.7)
+                                ? selectedColor.withValues(alpha: 0.7)
                                 : const Color(0xFF9DAFC2),
                           ),
                         ),
@@ -136,7 +136,7 @@ class BreakTimeSelectorWidget extends StatelessWidget {
                 color: const Color(0xFFFFF3E0),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: const Color(0xFFE07B00).withOpacity(0.3),
+                  color: const Color(0xFFE07B00).withValues(alpha: 0.3),
                 ),
               ),
               child: Row(

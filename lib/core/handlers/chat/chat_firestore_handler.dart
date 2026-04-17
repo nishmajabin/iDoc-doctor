@@ -21,8 +21,50 @@ class ChatFirestoreHandler {
     return doc.exists ? ChatRoomModel.fromFirestore(doc) : null;
   }
 
+  /// Queries for the first chat room that matches the given doctor–patient pair.
+  /// This catches legacy rooms whose document ID still included an appointmentId.
+  Future<ChatRoomModel?> findChatRoomByParticipants({
+    required String doctorId,
+    required String patientId,
+  }) async {
+    final snap = await _chatRooms
+        .where('doctorId', isEqualTo: doctorId)
+        .where('patientId', isEqualTo: patientId)
+        .limit(1)
+        .get();
+
+    if (snap.docs.isEmpty) return null;
+    return ChatRoomModel.fromFirestore(snap.docs.first);
+  }
+
   Future<void> createChatRoom(String chatRoomId, ChatRoomModel room) =>
       _chatRooms.doc(chatRoomId).set(room.toFirestore(), SetOptions(merge: true));
+
+  /// Merges updated metadata (names, avatars, latest appointmentId) into an
+  /// existing chat room document without overwriting message/unread fields.
+  Future<void> updateChatRoomMetadata({
+    required String chatRoomId,
+    String? doctorName,
+    String? patientName,
+    String? doctorProfileImageUrl,
+    String? patientProfileImageUrl,
+    String? appointmentId,
+  }) async {
+    final updates = <String, dynamic>{};
+    if (doctorName != null) updates['doctorName'] = doctorName;
+    if (patientName != null) updates['patientName'] = patientName;
+    if (doctorProfileImageUrl != null) {
+      updates['doctorProfileImageUrl'] = doctorProfileImageUrl;
+    }
+    if (patientProfileImageUrl != null) {
+      updates['patientProfileImageUrl'] = patientProfileImageUrl;
+    }
+    if (appointmentId != null) updates['appointmentId'] = appointmentId;
+
+    if (updates.isNotEmpty) {
+      await _chatRooms.doc(chatRoomId).update(updates);
+    }
+  }
 
   Stream<ChatRoomModel?> watchChatRoom(String chatRoomId) =>
       _chatRooms.doc(chatRoomId).snapshots().map(

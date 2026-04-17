@@ -71,5 +71,3 @@ class ChatRoomTile extends StatelessWidget {
     );
   }
 }
-
-

@@ -18,8 +18,7 @@ class ProfileContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final doctor = state.doctor;
-    final stats  = state.stats;
-
+    
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -30,40 +29,54 @@ class ProfileContent extends StatelessWidget {
           backgroundColor: AppColors.gradientStart,
           elevation: 0,
           leading: IconButton(
-            icon:  Icon(Icons.arrow_back_ios_new_rounded,
-                color: AppColors.gradientColor, size: 20),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: AppColors.gradientColor,
+              size: 20,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
             // ── Refresh stats ──────────────────────────────────────────────
             state.isStatsRefreshing
-                ?  Padding(
-                    padding: EdgeInsets.all(14),
-                    child: SizedBox(
-                      width: 20, height: 20,
-                      child: CircularProgressIndicator(
-                          color: AppColors.gradientColor, strokeWidth: 2),
+                ? Padding(
+                  padding: EdgeInsets.all(14),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.gradientColor,
+                      strokeWidth: 2,
                     ),
-                  )
-                : IconButton(
-                    icon:  Icon(Icons.refresh_rounded,
-                        color: AppColors.gradientColor, size: 22),
-                    onPressed: () => context
-                        .read<DoctorProfileBloc>()
-                        .add(RefreshProfileStats(doctorId: doctor.id!)),
                   ),
+                )
+                : IconButton(
+                  icon: Icon(
+                    Icons.refresh_rounded,
+                    color: AppColors.gradientColor,
+                    size: 22,
+                  ),
+                  onPressed:
+                      () => context.read<DoctorProfileBloc>().add(
+                        RefreshProfileStats(doctorId: doctor.id!),
+                      ),
+                ),
             // ── Settings ───────────────────────────────────────────────────
             IconButton(
-              icon:  Icon(Icons.settings_outlined,
-                  color: AppColors.gradientColor, size: 22),
-              tooltip: 'Settings',
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      DoctorSettingsScreen(currentDoctor: doctor),
-                ),
+              icon: Icon(
+                Icons.settings_outlined,
+                color: AppColors.gradientColor,
+                size: 22,
               ),
+              tooltip: 'Settings',
+              onPressed:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => DoctorSettingsScreen(currentDoctor: doctor),
+                    ),
+                  ),
             ),
             const SizedBox(width: 4),
           ],
@@ -84,7 +97,10 @@ class ProfileContent extends StatelessWidget {
                 ProfileSectionLabel(label: 'Revenue Overview'),
                 const SizedBox(height: 12),
                 RevenueDashboard(
-                    stats: stats, isLoading: state.isStatsRefreshing),
+                  stats: state.stats,
+                  isLoading: state.isStatsRefreshing,
+                  doctorId: state.doctor.id!, // null-safe with !
+                ),
                 const SizedBox(height: 28),
                 ProfileSectionLabel(label: 'About'),
                 const SizedBox(height: 12),

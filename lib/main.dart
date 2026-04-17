@@ -40,7 +40,7 @@ main() async {
 
 class IDocDoctor extends StatelessWidget {
   const IDocDoctor({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -54,13 +54,26 @@ class IDocDoctor extends StatelessWidget {
         BlocProvider(create: (context) => SlotFormBloc()),
         BlocProvider(create: (context) => ChatBloc()),
         BlocProvider(create: (context) => ChatRoomListBloc()),
-        BlocProvider(create: (context) => DoctorAppointmentBloc(DoctorAppointmentService(FirebaseFirestore.instance))),
-        BlocProvider(create: (context) => SlotBloc(slotService: SlotService(FirebaseFirestore.instance), doctorId: FirebaseAuth.instance.currentUser!.uid)),
+        BlocProvider(
+          create:
+              (context) => DoctorAppointmentBloc(
+                DoctorAppointmentService(FirebaseFirestore.instance),
+              ),
+        ),
+        BlocProvider(
+          create: (context) {
+            final user = FirebaseAuth.instance.currentUser;
+            return SlotBloc(
+              slotService: SlotService(FirebaseFirestore.instance),
+              doctorId: user?.uid ?? '',
+            );
+          },
+        ),
         BlocProvider(create: (context) => NotificationBloc()),
         BlocProvider(create: (context) => NotificationHistoryBloc()),
         BlocProvider(create: (context) => SettingsBloc()),
-        BlocProvider(create: (context) => DoctorProfileBloc()),       
-        BlocProvider(create: (context) => EditProfileBloc())
+        BlocProvider(create: (context) => DoctorProfileBloc()),
+        BlocProvider(create: (context) => EditProfileBloc()),
       ],
       child: MaterialApp(
         home: SplashScreen(),

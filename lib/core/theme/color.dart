@@ -6,6 +6,7 @@ class AppColors {
   static Color layerBlurColor2 = Color(0xFF37BBFF);
   static Color lightColor = Color(0xFF00B4D8);
   static Color primaryColor = Color(0xFF052C40);
+  static const backgroundColor = Colors.white;
   static Color gradientColor = Colors.white;
   static Color gradientMainColor = Color.fromARGB(255, 72, 131, 160);
   static Color skipColor = Color.fromARGB(255, 121, 121, 121);

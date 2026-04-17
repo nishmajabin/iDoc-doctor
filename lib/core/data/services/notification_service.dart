@@ -6,7 +6,6 @@ import 'package:idoc_doctor_side/core/handlers/notifications/notification_local_
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-
 class NotificationService {
   NotificationService._internal();
   static final NotificationService instance = NotificationService._internal();
@@ -16,7 +15,8 @@ class NotificationService {
 
   bool _initialized = false;
 
-  Stream<String?> get onNotificationTapped => _localHandler.onNotificationTapped;
+  Stream<String?> get onNotificationTapped =>
+      _localHandler.onNotificationTapped;
 
   // ── Init ──────────────────────────────────────────────────────────────────
 
@@ -30,8 +30,9 @@ class NotificationService {
     _fcmHandler = NotificationFcmHandler(
       fcm: FirebaseMessaging.instance,
       firestore: FirebaseFirestore.instance,
-      onShowNotification: ({required title, required body, payload}) =>
-          _localHandler.show(title: title, body: body, payload: payload),
+      onShowNotification:
+          ({required title, required body, payload}) =>
+              _localHandler.show(title: title, body: body, payload: payload),
     );
 
     await _initTimezone();
@@ -41,14 +42,13 @@ class NotificationService {
   }
 
   Future<void> _initTimezone() async {
-    tz.initializeTimeZones();
-    final tzInfo = await FlutterTimezone.getLocalTimezone();
-    final tzString = tzInfo.toString();
-    final ianaId = tzString.contains('(')
-        ? tzString.split('(')[1].split(',')[0].trim()
-        : tzString;
-    tz.setLocalLocation(tz.getLocation(ianaId));
-  }
+  tz.initializeTimeZones();
+
+  final tzInfo = await FlutterTimezone.getLocalTimezone();
+  final String timeZoneName = tzInfo.identifier;
+
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
+}
 
   // ── FCM token ─────────────────────────────────────────────────────────────
 
@@ -69,21 +69,19 @@ class NotificationService {
     required String body,
     String? payload,
     int? id,
-  }) =>
-      _localHandler.show(title: title, body: body, payload: payload, id: id);
+  }) => _localHandler.show(title: title, body: body, payload: payload, id: id);
 
   Future<void> scheduleAppointmentReminder({
     required String appointmentId,
     required String patientName,
     required DateTime appointmentDateTime,
     int minutesBefore = 10,
-  }) =>
-      _localHandler.scheduleReminder(
-        appointmentId: appointmentId,
-        patientName: patientName,
-        appointmentDateTime: appointmentDateTime,
-        minutesBefore: minutesBefore,
-      );
+  }) => _localHandler.scheduleReminder(
+    appointmentId: appointmentId,
+    patientName: patientName,
+    appointmentDateTime: appointmentDateTime,
+    minutesBefore: minutesBefore,
+  );
 
   Future<void> cancelAppointmentReminder(String appointmentId) =>
       _localHandler.cancelReminder(appointmentId);

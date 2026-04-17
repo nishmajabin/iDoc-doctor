@@ -1,61 +1,19 @@
 import 'package:flutter/material.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Unauthenticated view
-// ─────────────────────────────────────────────────────────────────────────────
-
-class UnauthenticatedView extends StatelessWidget {
-  const UnauthenticatedView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _ErrorScaffold(
-      icon: Icons.lock_outline_rounded,
-      iconBgColor: const Color(0xFFE0F4FF),
-      iconColor: const Color(0xFF0077B6),
-      title: 'Authentication Required',
-      subtitle: 'Please login to your account to view and manage appointments.',
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Invalid doctor view
-// ─────────────────────────────────────────────────────────────────────────────
-
-class InvalidDoctorView extends StatelessWidget {
-  const InvalidDoctorView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _ErrorScaffold(
-      icon: Icons.person_off_outlined,
-      iconBgColor: const Color(0xFFFFEBEB),
-      iconColor: const Color(0xFFD13D3D),
-      title: 'Profile Not Found',
-      subtitle:
-          'Your doctor profile could not be found. Please contact support.',
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared scaffold
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _ErrorScaffold extends StatelessWidget {
+class ErrorScaffold extends StatelessWidget {
   final IconData icon;
   final Color iconBgColor;
   final Color iconColor;
   final String title;
   final String subtitle;
 
-  const _ErrorScaffold({
+  const ErrorScaffold({
     required this.icon,
     required this.iconBgColor,
     required this.iconColor,
     required this.title,
     required this.subtitle,
+    super.key
   });
 
   @override

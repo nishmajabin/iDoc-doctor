@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:idoc_doctor_side/core/data/models/doctor_profile_stats_model.dart';
+import 'package:idoc_doctor_side/core/data/models/revenue_range_result_model.dart';
 
 class _AppointmentFields {
   static const String doctorId        = 'doctorId';
@@ -14,7 +15,6 @@ class _AppointmentStatus {
   static const String confirmed  = 'confirmed';
   static const String completed  = 'completed';
   static const String pending    = 'pending';
-  static const String cancelled  = 'cancelled';
 }
 
 class DoctorProfileFirestoreHandler {
@@ -107,10 +107,36 @@ class DoctorProfileFirestoreHandler {
     );
   }
 
+  Future<RevenueRangeResult> fetchRevenueForRange({
+  required String doctorId,
+  required DateTime start,
+  required DateTime end,
+}) async {
+  final snapshot = await _firestore
+      .collection('appointments')
+      .where('doctorId', isEqualTo: doctorId)
+      .where('status', whereIn: ['completed', 'confirmed'])
+      .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+      .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
+      .get();
+
+  double totalRevenue = 0;
+  for (final doc in snapshot.docs) {
+    final data = doc.data();
+    final amount = (data['consultationFee'] as num?)?.toDouble() ?? 0.0;
+    totalRevenue += amount;
+  }
+
+  return RevenueRangeResult(
+    revenue: totalRevenue,
+    appointmentCount: snapshot.docs.length,
+  );
+}
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   double _extractFee(Map<String, dynamic> data) =>
-      ((data[_AppointmentFields.consultationFee] ?? data['fee'] ?? 0) as num).toDouble();
+      ((data[_AppointmentFields.consultationFee] ?? data['consultationFee'] ?? 0) as num).toDouble();
 
   DateTime? _extractDate(Map<String, dynamic> data) {
     final completedAt = (data['completedAt'] as Timestamp?)?.toDate();
